@@ -1,11 +1,11 @@
 ﻿public class MenuItem
 {
     public string Title { get; set; }
-    public object TargetViewModel { get; set; }
+    public object ViewModel { get; set; }
 
-    public MenuItem(string title, object target)
+    public MenuItem(string title, object vm)
     {
         Title = title;
-        TargetViewModel = target;
+        ViewModel = vm;
     }
 }

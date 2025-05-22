@@ -7,7 +7,6 @@
         Title="Clinic" WindowState="Maximized">
 
     <DockPanel>
-
         <Border DockPanel.Dock="Top" Background="#2E3A59" Height="60">
             <Border DockPanel.Dock="Top" Background="#2E3A59" Height="60">
                 <Grid>
@@ -26,7 +25,6 @@
                                Margin="0,0,10,0"
                                HorizontalAlignment="Right" />
 
-                    <!-- Кнопка з іконкою -->
                     <Button Grid.Column="2"
                             Width="40"
                             Height="40"
@@ -38,10 +36,10 @@
                             VerticalAlignment="Center"
                             Click="ProfileButton_Click"
                             ToolTip="{Binding FullName}">
-                        <Image Source="pack://application:,,,/Assets/catalog.png"
-                               Width="28"
-                               Height="28"
-                               Stretch="Uniform" />
+                            <Image Source="pack://application:,,,/Assets/catalog.png"
+                                   Width="28"
+                                   Height="28"
+                                   Stretch="Uniform" />
 
                     </Button>
                 </Grid>
@@ -49,8 +47,7 @@
 
         </Border>
 
-
-        <!-- Основна область -->
-        <ContentControl Content="{Binding CurrentView}" />
+        <!-- <ContentControl x:Name="RoleContent" Grid.Row="1" /> -->
+        <ContentControl Content="{Binding CurrentViewModel}" />
     </DockPanel>
 </Window>

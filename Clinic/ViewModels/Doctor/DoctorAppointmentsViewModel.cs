@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Clinic.ViewModels;
 
 namespace Clinic.ViewModels.Doctor
 {
-    internal class DoctorAppointmentsViewModel
+    public class DoctorAppointmentsViewModel : BaseViewModel
     {
+        private string _testMessage = "Це ViewModel";
+        public string TestMessage
+        {
+            get => _testMessage;
+            set { _testMessage = value; OnPropertyChanged(); }
+        }
     }
+
 }

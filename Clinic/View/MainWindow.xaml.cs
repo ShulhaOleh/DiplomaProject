@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Clinic.ViewModels;
+using Clinic.ViewModels.Doctor;
+using Clinic.ViewModels.Receptionist;
+using Clinic.ViewModels.Admin;
 
 namespace Clinic.View
 {
@@ -22,11 +18,12 @@ namespace Clinic.View
             InitializeComponent();
             DataContext = new MainWindowViewModel(fullName, role);
         }
+
         private void Menu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (DataContext is MainWindowViewModel vm && sender is ListBox lb && lb.SelectedItem is MenuItem item)
+            if (DataContext is MainWindowViewModel vm && sender is ListBox lb && lb.SelectedItem is MenuItem item && item.ViewModel is BaseViewModel target)
             {
-                vm.NavigateCommand.Execute(item.TargetViewModel);
+                vm.NavigateCommand.Execute(target);
             }
         }
 
@@ -45,24 +42,20 @@ namespace Clinic.View
             {
                 foreach (var item in vm.MenuItems)
                 {
-                    var menuItem = new System.Windows.Controls.MenuItem
+                    if (item.ViewModel is BaseViewModel vmTarget)
                     {
-                        Header = item.Title,
-                        Command = vm.NavigateCommand,
-                        CommandParameter = item.TargetViewModel,
-                        FontSize = 14,
-                        Padding = new Thickness(12, 6, 12, 6),
-                        Icon = new TextBlock
+                        var menuItem = new System.Windows.Controls.MenuItem
                         {
-                            Text = "",
-                            FontSize = 12,
-                            Margin = new Thickness(0, 0, 6, 0)
-                        }
-                    };
+                            Header = item.Title,
+                            Command = vm.NavigateCommand,
+                            CommandParameter = vmTarget,
+                            FontSize = 14,
+                            Padding = new Thickness(12, 6, 12, 6),
+                            Style = (Style)FindResource(typeof(System.Windows.Controls.MenuItem))
+                        };
 
-                    menuItem.Style = (Style)FindResource(typeof(System.Windows.Controls.MenuItem));
-
-                    menu.Items.Add(menuItem);
+                        menu.Items.Add(menuItem);
+                    }
                 }
 
                 menu.Items.Add(new Separator());
@@ -72,13 +65,8 @@ namespace Clinic.View
                     Header = "Вийти",
                     FontSize = 14,
                     Padding = new Thickness(12, 6, 12, 6),
-                    Icon = new TextBlock
-                    {
-                        Text = "",
-                        FontSize = 12,
-                        Margin = new Thickness(0, 0, 6, 0)
-                    },
-                    Command = new RelayCommand(Logout)
+                    Command = new RelayCommand(Logout),
+                    Style = (Style)FindResource(typeof(System.Windows.Controls.MenuItem))
                 };
 
                 menu.Items.Add(logoutItem);
@@ -89,12 +77,9 @@ namespace Clinic.View
             menu.IsOpen = true;
         }
 
-
         private void Logout()
         {
             Close();
         }
-
-
     }
 }

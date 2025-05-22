@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Clinic.Models
 {
-    class Receptionist
+    public class Receptionist
     {
+        public int AdministratorID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
     }
 }
