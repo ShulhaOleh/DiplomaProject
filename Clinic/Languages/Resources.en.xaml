@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <sys:String x:Key="UsernameLabel" xmlns:sys="clr-namespace:System;assembly=mscorlib">Username</sys:String>
+    <sys:String x:Key="PasswordLabel" xmlns:sys="clr-namespace:System;assembly=mscorlib">Password</sys:String>
+    <sys:String x:Key="LoginButton" xmlns:sys="clr-namespace:System;assembly=mscorlib">Login</sys:String>
+    <sys:String x:Key="LangLabel" xmlns:sys="clr-namespace:System;assembly=mscorlib">Language</sys:String>
+    <sys:String x:Key="NoRoleMessage" xmlns:sys="clr-namespace:System;assembly=mscorlib">User found, but no data to display.</sys:String>
+    <sys:String x:Key="IncorrectPasswordOrLoginMessage" xmlns:sys="clr-namespace:System;assembly=mscorlib">Incorrect login or password.</sys:String>
+    <sys:String x:Key="EmptyLoginFieldsMessage" xmlns:sys="clr-namespace:System;assembly=mscorlib">Please fill in your login and password.</sys:String>
+</ResourceDictionary>
