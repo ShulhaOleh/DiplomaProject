@@ -7,6 +7,7 @@ using Clinic.ViewModels.Receptionist;
 
 public class MainWindowViewModel : BaseViewModel
 {
+
     public string FullName { get; }
     public string Role { get; }
 
@@ -21,19 +22,21 @@ public class MainWindowViewModel : BaseViewModel
         set { _currentViewModel = value; OnPropertyChanged(); }
     }
 
-    public MainWindowViewModel(string fullName, string role)
+    public MainWindowViewModel(string fullName, string role, int linkedId)
+
     {
         FullName = fullName;
         Role = role;
 
         MenuItems = new ObservableCollection<MenuItem>();
         NavigateCommand = new RelayCommand<BaseViewModel>(vm => CurrentViewModel = vm);
+        CurrentViewModel = new DoctorAppointmentsViewModel(linkedId);
 
         switch (role)
         {
             case "Doctor":
-                MenuItems.Add(new MenuItem("Прийоми", new DoctorAppointmentsViewModel()));
-                CurrentViewModel = new DoctorAppointmentsViewModel();
+                MenuItems.Add(new MenuItem("Прийоми", new DoctorAppointmentsViewModel(linkedId)));
+                CurrentViewModel = new DoctorAppointmentsViewModel(linkedId);
                 break;
             case "Receptionist":
                 MenuItems.Add(new MenuItem("Запис", new AppointmentRegistrationViewModel()));

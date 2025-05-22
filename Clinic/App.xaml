@@ -10,6 +10,10 @@
                 <ResourceDictionary Source="Languages/Resources.uk.xaml" />
                 <ResourceDictionary Source="Languages/Resources.en.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type vm:DoctorAppointmentsViewModel}">
+                <view:DoctorAppointmentsView />
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
