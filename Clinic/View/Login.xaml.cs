@@ -19,9 +19,6 @@ using System.Windows.Shapes;
 
 namespace Clinic.View
 {
-    /// <summary>
-    /// Interaction logic for Login.xaml
-    /// </summary>
     public partial class Login : Window
     {
         public Login()
@@ -81,7 +78,6 @@ namespace Clinic.View
                 Application.Current.Resources.MergedDictionaries.Remove(oldDict);
 
             Application.Current.Resources.MergedDictionaries.Add(dict);
-
         }
 
         private void LanguageSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)

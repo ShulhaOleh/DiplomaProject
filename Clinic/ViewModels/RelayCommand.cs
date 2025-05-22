@@ -7,6 +7,12 @@ namespace Clinic.ViewModels
     {
         private readonly Action _execute;
         private readonly Func<bool> _canExecute;
+        private Action<object> navigate;
+
+        public RelayCommand(Action<object> navigate)
+        {
+            this.navigate = navigate;
+        }
 
         public RelayCommand(Action execute, Func<bool> canExecute = null)
         {

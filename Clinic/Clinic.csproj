@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\catalog.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MySql.Data" Version="9.3.0" />
   </ItemGroup>
 
@@ -39,6 +43,10 @@
     <LastGenOutput>Settings.Designer.cs</LastGenOutput>
   </None>
 </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\catalog.png" />
+  </ItemGroup>
 
 
 </Project>

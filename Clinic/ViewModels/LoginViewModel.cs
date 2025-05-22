@@ -7,18 +7,20 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using System.Windows;
 using System;
-using System.Text;
-using static System.Net.Mime.MediaTypeNames;
-using System.Windows.Controls;
-using System.Globalization;
-using System.Threading;
-using System.Linq;
 
 namespace Clinic.ViewModels
 {
 
     public class LoginViewModel : INotifyPropertyChanged
     {
+        public ICommand LoginCommand { get; }
+
+        public LoginViewModel()
+        {
+            LoginCommand = new RelayCommand(Login);
+            LoadSavedCredentials();
+        }
+
         private string _username;
         private string _password;
         private bool _rememberMe;
@@ -46,14 +48,6 @@ namespace Clinic.ViewModels
         {
             get => _message;
             set { _message = value; OnPropertyChanged(); }
-        }
-
-        public ICommand LoginCommand { get; }
-
-        public LoginViewModel()
-        {
-            LoginCommand = new RelayCommand(Login);
-            LoadSavedCredentials();
         }
 
         public void LoadSavedCredentials()
@@ -177,6 +171,5 @@ namespace Clinic.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
     }
 }
