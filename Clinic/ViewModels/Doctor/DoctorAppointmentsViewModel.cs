@@ -22,7 +22,7 @@ namespace Clinic.ViewModels.Doctor
             LoadAppointmentsFromDatabase();
         }
 
-        private void LoadAppointmentsFromDatabase()
+        public void LoadAppointmentsFromDatabase()
         {
             var appointments = new List<AppointmentModel>();
 
@@ -32,10 +32,12 @@ namespace Clinic.ViewModels.Doctor
 
                 string query = @"
                                 SELECT 
-                                    CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
-                                    a.AppointmentDate,
-                                    a.Status,
-                                    a.Notes
+                                a.AppointmentID,
+                                p.PatientID,
+                                CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
+                                a.AppointmentDate,
+                                a.Status,
+                                a.Notes
                                 FROM Appointments a
                                 JOIN Patients p ON a.PatientID = p.PatientID
                                 WHERE a.DoctorID = @doctorId
@@ -51,6 +53,7 @@ namespace Clinic.ViewModels.Doctor
                         {
                             var model = new AppointmentModel
                             {
+                                AppointmentID = reader.GetInt32("AppointmentID"),
                                 PatientName = reader.GetString("PatientName"),
                                 AppointmentDate = reader.GetDateTime("AppointmentDate"),
                                 Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? "Очікується" : reader.GetString("Status"),
@@ -64,20 +67,27 @@ namespace Clinic.ViewModels.Doctor
 
             var today = DateTime.Today;
 
-            TodayAppointments = new ObservableCollection<AppointmentModel>(
-                appointments.Where(a => a.AppointmentDate.Date == today)
-                            .OrderBy(a => a.AppointmentDate)
-            );
+            TodayAppointments.Clear();
+            foreach (var a in appointments
+                .Where(a => a.AppointmentDate.Date == today)
+                .OrderBy(a => a.Status == "Прийом завершено")
+                .ThenBy(a => a.AppointmentDate))
+                TodayAppointments.Add(a);
 
-            UpcomingAppointments = new ObservableCollection<AppointmentModel>(
-                appointments.Where(a => a.AppointmentDate.Date > today)
-                            .OrderBy(a => a.AppointmentDate)
-            );
+            UpcomingAppointments.Clear();
+            foreach (var a in appointments
+                .Where(a => a.AppointmentDate.Date > today)
+                .OrderBy(a => a.Status == "Прийом завершено")
+                .ThenBy(a => a.AppointmentDate))
+                UpcomingAppointments.Add(a);
 
-            PastAppointments = new ObservableCollection<AppointmentModel>(
-                appointments.Where(a => a.AppointmentDate.Date < today)
-                            .OrderByDescending(a => a.AppointmentDate)
-            );
+            PastAppointments.Clear();
+            foreach (var a in appointments
+                .Where(a => a.AppointmentDate.Date < today)
+                .OrderBy(a => a.Status == "Прийом завершено")
+                .ThenByDescending(a => a.AppointmentDate))
+                PastAppointments.Add(a);
+
 
             var firstToday = TodayAppointments.FirstOrDefault(a => a.Status != "Прийом завершено");
             if (firstToday != null)
@@ -85,5 +95,26 @@ namespace Clinic.ViewModels.Doctor
                 firstToday.IsNearestToday = true;
             }
         }
+
+        public void CompleteAppointment(AppointmentModel appointment)
+        {
+            using var conn = Clinic.DB.ClinicDB.GetConnection();
+            conn.Open();
+
+            string query = @"
+                            UPDATE Appointments
+                            SET Status = @status, Notes = @notes
+                            WHERE AppointmentID = @id";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@status", "Прийом завершено");
+            cmd.Parameters.AddWithValue("@notes", appointment.Notes);
+            cmd.Parameters.AddWithValue("@id", appointment.AppointmentID);
+
+
+            cmd.ExecuteNonQuery();
+            LoadAppointmentsFromDatabase();
+        }
+
     }
 }

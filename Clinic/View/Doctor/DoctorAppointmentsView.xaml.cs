@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Clinic.Models;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using Clinic.View.Doctor;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Clinic.View.Doctor
 {
@@ -21,5 +12,27 @@ namespace Clinic.View.Doctor
         {
             InitializeComponent();
         }
+
+        private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not DataGrid dg || dg.SelectedItem is not AppointmentModel selected)
+                return;
+
+            if (selected.Status == "Прийом завершено")
+                return;
+
+            var dialog = new CompleteAppointmentWindow(selected);
+            bool? result = dialog.ShowDialog();
+
+            if (result == true && DataContext is Clinic.ViewModels.Doctor.DoctorAppointmentsViewModel vm)
+            {
+                vm.CompleteAppointment(selected);
+                vm.LoadAppointmentsFromDatabase();
+
+                MessageBox.Show("Прийом успішно завершено!", "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+
     }
 }

@@ -1,0 +1,12 @@
+﻿<Window x:Class="Clinic.View.Doctor.CompleteAppointmentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Завершити прийом" Height="300" Width="400">
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock Text="Нотатки до прийому:" Margin="0,0,0,5"/>
+            <TextBox x:Name="NotesBox" AcceptsReturn="True" Height="150" TextWrapping="Wrap"/>
+            <Button Content="Завершити прийом" Margin="0,10,0,0" Click="Complete_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

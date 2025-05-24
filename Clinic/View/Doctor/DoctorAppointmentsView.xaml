@@ -42,6 +42,7 @@
         <TabControl>
             <TabItem Header="Сьогодні">
                 <DataGrid ItemsSource="{Binding Source={StaticResource GroupedAppointments}}"
+                          MouseDoubleClick="DataGrid_MouseDoubleClick"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           CanUserSortColumns="False"
@@ -78,6 +79,7 @@
 
             <TabItem Header="Майбутні">
                 <DataGrid ItemsSource="{Binding Source={StaticResource GroupedUpcomingAppointments}}"
+                          MouseDoubleClick="DataGrid_MouseDoubleClick"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           CanUserSortColumns="False"
@@ -114,6 +116,7 @@
 
             <TabItem Header="Минулі">
                 <DataGrid ItemsSource="{Binding Source={StaticResource GroupedPastAppointments}}"
+                          MouseDoubleClick="DataGrid_MouseDoubleClick"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           CanUserSortColumns="False"

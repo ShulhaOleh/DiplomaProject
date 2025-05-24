@@ -2,6 +2,7 @@
 
 public class AppointmentModel
 {
+    public int AppointmentID { get; set; }
     public string PatientName { get; set; }
     public DateTime AppointmentDate { get; set; }
     public string Notes { get; set; }
