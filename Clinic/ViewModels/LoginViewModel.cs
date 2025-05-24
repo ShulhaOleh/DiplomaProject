@@ -102,7 +102,12 @@ namespace Clinic.ViewModels
             if (reader.Read())
             {
                 string role = reader.GetString("Role");
-                int linkedId = reader.GetInt32("LinkedID");
+                int? linkedId = null;
+
+                if (!reader.IsDBNull(reader.GetOrdinal("LinkedID")))
+                    linkedId = reader.GetInt32(reader.GetOrdinal("LinkedID"));
+
+
 
                 SaveCredentials();
 
@@ -124,28 +129,39 @@ namespace Clinic.ViewModels
                 Message = App.Current.TryFindResource("IncorrectPasswordOrLoginMessage").ToString();
         }
 
-        private string GetFullNameByRole(string role, int id)
+        public static string GetFullNameByRole(string role, int? linkedId)
         {
-            using var conn = ClinicDB.GetConnection();
-            conn.Open();
+            if (role == "Admin" || linkedId == null)
+                return "Системний адміністратор";
 
-            string table = role switch
+            using (var conn = Clinic.DB.ClinicDB.GetConnection())
             {
-                "Doctor" => "Doctors",
-                "Receptionist" => "Administrators",
-                _ => null
-            };
-            if (table == null) return null;
+                conn.Open();
 
-            var cmd = new MySqlCommand($"SELECT FirstName, LastName FROM {table} WHERE {table.Substring(0, table.Length - 1)}ID = @id", conn);
-            cmd.Parameters.AddWithValue("@id", id);
-            using var reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                return reader.GetString("FirstName") + " " + reader.GetString("LastName");
+                string table, idColumn;
+
+                switch (role)
+                {
+                    case "Doctor":
+                        table = "Doctors";
+                        idColumn = "DoctorID";
+                        break;
+                    case "Receptionist":
+                        table = "Receptionist";
+                        idColumn = "AdministratorID";
+                        break;
+                    default:
+                        return "Невідома роль";
+                }
+
+                var cmd = new MySqlCommand($"SELECT CONCAT(FirstName, ' ', LastName) FROM {table} WHERE {idColumn} = @id", conn);
+                cmd.Parameters.AddWithValue("@id", linkedId);
+
+                var result = cmd.ExecuteScalar();
+                return result?.ToString() ?? "Невідомо";
             }
-            return null;
         }
+
 
         private static string GetMd5Hash(string input)
         {

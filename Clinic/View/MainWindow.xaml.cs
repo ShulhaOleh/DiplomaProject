@@ -13,10 +13,11 @@ namespace Clinic.View
 {
     public partial class MainWindow : Window
     {
-        public MainWindow(string fullName, string role, int linkedId)
+        public MainWindow(string fullName, string role, int? linkedId)
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel(fullName, role, linkedId);
+            DataContext = new MainWindowViewModel(fullName, role, linkedId ?? 0);
+
         }
 
 
