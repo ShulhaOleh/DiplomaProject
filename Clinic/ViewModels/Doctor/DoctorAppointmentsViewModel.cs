@@ -31,15 +31,15 @@ namespace Clinic.ViewModels.Doctor
                 connection.Open();
 
                 string query = @"
-                                SELECT 
-                                    CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
-                                    a.AppointmentDate,
-                                    a.Status,
-                                    a.Notes
-                                FROM Appointments a
-                                JOIN Patients p ON a.PatientID = p.PatientID
-                                WHERE a.DoctorID = @doctorId
-                                ORDER BY a.AppointmentDate ASC;";
+            SELECT 
+                CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
+                a.AppointmentDate,
+                a.Status,
+                a.Notes
+            FROM Appointments a
+            JOIN Patients p ON a.PatientID = p.PatientID
+            WHERE a.DoctorID = @doctorId
+            ORDER BY a.AppointmentDate ASC;";
 
                 using (var command = new MySqlCommand(query, connection))
                 {
@@ -54,7 +54,7 @@ namespace Clinic.ViewModels.Doctor
                                 PatientName = reader.GetString("PatientName"),
                                 AppointmentDate = reader.GetDateTime("AppointmentDate"),
                                 Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? "Очікується" : reader.GetString("Status"),
-                                Notes = reader.GetString("Notes")
+                                Notes = reader.IsDBNull(reader.GetOrdinal("Notes")) ? string.Empty : reader.GetString("Notes")
                             };
                             appointments.Add(model);
                         }
@@ -64,18 +64,10 @@ namespace Clinic.ViewModels.Doctor
 
             var today = DateTime.Today;
 
-            var todayList = appointments.Where(a => a.AppointmentDate.Date == today)
-                                        .OrderBy(a => a.Status == "Прийом завершено")
-                                        .ThenBy(a => a.AppointmentDate)
-                                        .ToList();
-
-            var nearest = todayList.FirstOrDefault(a => a.Status != "Прийом завершено");
-            if (nearest != null)
-            {
-                nearest.IsNearestToday = true;
-            }
-
-            TodayAppointments = new ObservableCollection<AppointmentModel>(todayList);
+            TodayAppointments = new ObservableCollection<AppointmentModel>(
+                appointments.Where(a => a.AppointmentDate.Date == today)
+                            .OrderBy(a => a.AppointmentDate)
+            );
 
             UpcomingAppointments = new ObservableCollection<AppointmentModel>(
                 appointments.Where(a => a.AppointmentDate.Date > today)
@@ -87,6 +79,7 @@ namespace Clinic.ViewModels.Doctor
                             .OrderByDescending(a => a.AppointmentDate)
             );
         }
+
 
 
 

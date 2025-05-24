@@ -6,5 +6,6 @@ public class AppointmentModel
     public DateTime AppointmentDate { get; set; }
     public string Notes { get; set; }
     public string Status { get; set; }
+    // Highlight nearest today's appointment
     public bool IsNearestToday { get; set; } = false;
 }

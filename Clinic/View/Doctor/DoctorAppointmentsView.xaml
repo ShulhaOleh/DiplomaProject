@@ -1,16 +1,38 @@
 ﻿<UserControl x:Class="Clinic.View.Doctor.DoctorAppointmentsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Clinic.Converters"
+             mc:Ignorable="d">
     <UserControl.Resources>
+        <local:DateOnlyConverter x:Key="DateOnlyConverter" />
+
+        <CollectionViewSource x:Key="GroupedAppointments" Source="{Binding TodayAppointments}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="AppointmentDate" Converter="{StaticResource DateOnlyConverter}" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource x:Key="GroupedUpcomingAppointments" Source="{Binding UpcomingAppointments}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="AppointmentDate" Converter="{StaticResource DateOnlyConverter}" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource x:Key="GroupedPastAppointments" Source="{Binding PastAppointments}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="AppointmentDate" Converter="{StaticResource DateOnlyConverter}" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
         <Style TargetType="DataGridRow">
             <Style.Triggers>
-                <!-- Highlight gray if completed -->
                 <DataTrigger Binding="{Binding Status}" Value="Прийом завершено">
                     <Setter Property="Background" Value="LightGray" />
                 </DataTrigger>
-                <!-- Highlight yellow if this is the earliest future appointment today -->
-                <DataTrigger Binding="{Binding IsNearestToday}" Value="True">
-                    <Setter Property="Background" Value="#FDEEA9" />
+                <DataTrigger Binding="{Binding Status}" Value="найближчий">
+                    <Setter Property="Background" Value="Yellow" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -19,46 +41,109 @@
     <Grid>
         <TabControl>
             <TabItem Header="Сьогодні">
-                <DataGrid ItemsSource="{Binding TodayAppointments}"
+                <DataGrid ItemsSource="{Binding Source={StaticResource GroupedAppointments}}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           CanUserSortColumns="False"
-                          SelectionMode="Single">
+                          SelectionMode="Single"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="All">
+                    <DataGrid.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, StringFormat='{}{0:dd MMMM yyyy}'}"
+                                               FontWeight="Bold" FontSize="11"
+                                               Margin="4,4,0,2"
+                                               Background="WhiteSmoke"
+                                               Padding="6,2" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <DataGridRowsPresenter/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                        </GroupStyle>
+                    </DataGrid.GroupStyle>
+
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Пацієнт" Binding="{Binding PatientName}" Width="2*" />
-                        <DataGridTextColumn Header="Дата" Binding="{Binding AppointmentDate, StringFormat='dd.MM.yyyy HH:mm'}" Width="2*" />
+                        <DataGridTextColumn Header="Час" Binding="{Binding AppointmentDate, StringFormat='HH:mm'}" Width="1.5*" />
                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="1.5*" />
-                        <DataGridTextColumn Header="Опис" Binding="{Binding Notes}" Width="3*" />
+                        <DataGridTextColumn Header="Опис" Binding="{Binding Description}" Width="3*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
 
             <TabItem Header="Майбутні">
-                <DataGrid ItemsSource="{Binding UpcomingAppointments}"
+                <DataGrid ItemsSource="{Binding Source={StaticResource GroupedUpcomingAppointments}}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           CanUserSortColumns="False"
-                          SelectionMode="Single">
+                          SelectionMode="Single"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="All">
+                    <DataGrid.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, StringFormat='{}{0:dd MMMM yyyy}'}"
+                                               FontWeight="Bold" FontSize="11"
+                                               Margin="4,4,0,2"
+                                               Background="WhiteSmoke"
+                                               Padding="6,2" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <DataGridRowsPresenter/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                        </GroupStyle>
+                    </DataGrid.GroupStyle>
+
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Пацієнт" Binding="{Binding PatientName}" Width="2*" />
-                        <DataGridTextColumn Header="Дата" Binding="{Binding AppointmentDate, StringFormat='dd.MM.yyyy HH:mm'}" Width="2*" />
+                        <DataGridTextColumn Header="Час" Binding="{Binding AppointmentDate, StringFormat='HH:mm'}" Width="1.5*" />
                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="1.5*" />
-                        <DataGridTextColumn Header="Опис" Binding="{Binding Notes}" Width="3*" />
+                        <DataGridTextColumn Header="Опис" Binding="{Binding Description}" Width="3*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
 
             <TabItem Header="Минулі">
-                <DataGrid ItemsSource="{Binding PastAppointments}"
+                <DataGrid ItemsSource="{Binding Source={StaticResource GroupedPastAppointments}}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           CanUserSortColumns="False"
-                          SelectionMode="Single">
+                          SelectionMode="Single"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="All">
+                    <DataGrid.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, StringFormat='{}{0:dd MMMM yyyy}'}"
+                                               FontWeight="Bold" FontSize="11"
+                                               Margin="4,4,0,2"
+                                               Background="WhiteSmoke"
+                                               Padding="6,2" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <DataGridRowsPresenter/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                        </GroupStyle>
+                    </DataGrid.GroupStyle>
+
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Пацієнт" Binding="{Binding PatientName}" Width="2*" />
-                        <DataGridTextColumn Header="Дата" Binding="{Binding AppointmentDate, StringFormat='dd.MM.yyyy HH:mm'}" Width="2*" />
+                        <DataGridTextColumn Header="Час" Binding="{Binding AppointmentDate, StringFormat='HH:mm'}" Width="1.5*" />
                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="1.5*" />
-                        <DataGridTextColumn Header="Опис" Binding="{Binding Notes}" Width="3*" />
+                        <DataGridTextColumn Header="Опис" Binding="{Binding Description}" Width="3*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
