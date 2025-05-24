@@ -31,15 +31,15 @@ namespace Clinic.ViewModels.Doctor
                 connection.Open();
 
                 string query = @"
-            SELECT 
-                CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
-                a.AppointmentDate,
-                a.Status,
-                a.Notes
-            FROM Appointments a
-            JOIN Patients p ON a.PatientID = p.PatientID
-            WHERE a.DoctorID = @doctorId
-            ORDER BY a.AppointmentDate ASC;";
+                                SELECT 
+                                    CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
+                                    a.AppointmentDate,
+                                    a.Status,
+                                    a.Notes
+                                FROM Appointments a
+                                JOIN Patients p ON a.PatientID = p.PatientID
+                                WHERE a.DoctorID = @doctorId
+                                ORDER BY a.AppointmentDate ASC;";
 
                 using (var command = new MySqlCommand(query, connection))
                 {
@@ -78,12 +78,12 @@ namespace Clinic.ViewModels.Doctor
                 appointments.Where(a => a.AppointmentDate.Date < today)
                             .OrderByDescending(a => a.AppointmentDate)
             );
+
+            var firstToday = TodayAppointments.FirstOrDefault(a => a.Status != "Прийом завершено");
+            if (firstToday != null)
+            {
+                firstToday.IsNearestToday = true;
+            }
         }
-
-
-
-
-
-
     }
 }

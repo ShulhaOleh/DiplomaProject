@@ -31,8 +31,8 @@
                 <DataTrigger Binding="{Binding Status}" Value="Прийом завершено">
                     <Setter Property="Background" Value="LightGray" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Status}" Value="найближчий">
-                    <Setter Property="Background" Value="Yellow" />
+                <DataTrigger Binding="{Binding IsNearestToday}" Value="true">
+                    <Setter Property="Background" Value="#FFF999" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -71,7 +71,7 @@
                         <DataGridTextColumn Header="Пацієнт" Binding="{Binding PatientName}" Width="2*" />
                         <DataGridTextColumn Header="Час" Binding="{Binding AppointmentDate, StringFormat='HH:mm'}" Width="1.5*" />
                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="1.5*" />
-                        <DataGridTextColumn Header="Опис" Binding="{Binding Description}" Width="3*" />
+                        <DataGridTextColumn Header="Опис" Binding="{Binding Notes}" Width="3*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -107,7 +107,7 @@
                         <DataGridTextColumn Header="Пацієнт" Binding="{Binding PatientName}" Width="2*" />
                         <DataGridTextColumn Header="Час" Binding="{Binding AppointmentDate, StringFormat='HH:mm'}" Width="1.5*" />
                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="1.5*" />
-                        <DataGridTextColumn Header="Опис" Binding="{Binding Description}" Width="3*" />
+                        <DataGridTextColumn Header="Опис" Binding="{Binding Notes}" Width="3*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -143,7 +143,7 @@
                         <DataGridTextColumn Header="Пацієнт" Binding="{Binding PatientName}" Width="2*" />
                         <DataGridTextColumn Header="Час" Binding="{Binding AppointmentDate, StringFormat='HH:mm'}" Width="1.5*" />
                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="1.5*" />
-                        <DataGridTextColumn Header="Опис" Binding="{Binding Description}" Width="3*" />
+                        <DataGridTextColumn Header="Опис" Binding="{Binding Notes}" Width="3*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
