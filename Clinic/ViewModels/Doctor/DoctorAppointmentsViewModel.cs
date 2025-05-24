@@ -1,38 +1,45 @@
-﻿using Clinic.Models;
-using MySql.Data.MySqlClient;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
+using Clinic.Models;
+using MySql.Data.MySqlClient;
 using System.Linq;
 
 namespace Clinic.ViewModels.Doctor
 {
     public class DoctorAppointmentsViewModel : BaseViewModel
     {
-        public ObservableCollection<AppointmentModel> Appointments { get; set; }
+        public ObservableCollection<AppointmentModel> TodayAppointments { get; set; } = new();
+        public ObservableCollection<AppointmentModel> UpcomingAppointments { get; set; } = new();
+        public ObservableCollection<AppointmentModel> PastAppointments { get; set; } = new();
 
         private readonly int _doctorId;
 
         public DoctorAppointmentsViewModel(int doctorId)
         {
             _doctorId = doctorId;
-            Appointments = new ObservableCollection<AppointmentModel>();
             LoadAppointmentsFromDatabase();
         }
 
         private void LoadAppointmentsFromDatabase()
         {
+            var appointments = new List<AppointmentModel>();
+
             using (var connection = Clinic.DB.ClinicDB.GetConnection())
             {
                 connection.Open();
 
                 string query = @"
-                    SELECT CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
-                           a.AppointmentDate,
-                           a.Notes
-                    FROM Appointments a
-                    JOIN Patients p ON a.PatientID = p.PatientID
-                    WHERE a.DoctorID = @doctorId
-                    ORDER BY a.AppointmentDate ASC;";
+                                SELECT 
+                                    CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
+                                    a.AppointmentDate,
+                                    a.Status,
+                                    a.Notes
+                                FROM Appointments a
+                                JOIN Patients p ON a.PatientID = p.PatientID
+                                WHERE a.DoctorID = @doctorId
+                                ORDER BY a.AppointmentDate ASC;";
 
                 using (var command = new MySqlCommand(query, connection))
                 {
@@ -42,29 +49,48 @@ namespace Clinic.ViewModels.Doctor
                     {
                         while (reader.Read())
                         {
-                            var appointmentDate = reader.GetDateTime("AppointmentDate");
-
                             var model = new AppointmentModel
                             {
                                 PatientName = reader.GetString("PatientName"),
-                                Date = appointmentDate.Date,
-                                Time = appointmentDate.ToString("HH:mm"),
-                                Reason = reader.IsDBNull(reader.GetOrdinal("Notes")) ? "" : reader.GetString("Notes")
+                                AppointmentDate = reader.GetDateTime("AppointmentDate"),
+                                Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? "Очікується" : reader.GetString("Status"),
+                                Notes = reader.GetString("Notes")
                             };
-
-                            Appointments.Add(model);
+                            appointments.Add(model);
                         }
                     }
                 }
             }
-        }
-    }
 
-    public class AppointmentModel
-    {
-        public string PatientName { get; set; }
-        public DateTime Date { get; set; }
-        public string Time { get; set; } // hh:mm
-        public string Reason { get; set; }
+            var today = DateTime.Today;
+
+            var todayList = appointments.Where(a => a.AppointmentDate.Date == today)
+                                        .OrderBy(a => a.Status == "Прийом завершено")
+                                        .ThenBy(a => a.AppointmentDate)
+                                        .ToList();
+
+            var nearest = todayList.FirstOrDefault(a => a.Status != "Прийом завершено");
+            if (nearest != null)
+            {
+                nearest.IsNearestToday = true;
+            }
+
+            TodayAppointments = new ObservableCollection<AppointmentModel>(todayList);
+
+            UpcomingAppointments = new ObservableCollection<AppointmentModel>(
+                appointments.Where(a => a.AppointmentDate.Date > today)
+                            .OrderBy(a => a.AppointmentDate)
+            );
+
+            PastAppointments = new ObservableCollection<AppointmentModel>(
+                appointments.Where(a => a.AppointmentDate.Date < today)
+                            .OrderByDescending(a => a.AppointmentDate)
+            );
+        }
+
+
+
+
+
     }
 }

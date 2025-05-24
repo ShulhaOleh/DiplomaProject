@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace Clinic.View.Doctor
 {
-    /// <summary>
-    /// Interaction logic for DoctorAppointmentsView.xaml
-    /// </summary>
     public partial class DoctorAppointmentsView : UserControl
     {
         public DoctorAppointmentsView()
