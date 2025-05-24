@@ -56,6 +56,7 @@ namespace Clinic.ViewModels.Doctor
                                 AppointmentID = reader.GetInt32("AppointmentID"),
                                 PatientName = reader.GetString("PatientName"),
                                 AppointmentDate = reader.GetDateTime("AppointmentDate"),
+                                PatientID = reader.GetInt32("PatientID"),
                                 Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? "Очікується" : reader.GetString("Status"),
                                 Notes = reader.IsDBNull(reader.GetOrdinal("Notes")) ? string.Empty : reader.GetString("Notes")
                             };

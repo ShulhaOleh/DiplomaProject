@@ -1,12 +1,71 @@
 ﻿<Window x:Class="Clinic.View.Doctor.CompleteAppointmentWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Завершити прийом" Height="300" Width="400">
-    <Grid Margin="10">
-        <StackPanel>
-            <TextBlock Text="Нотатки до прийому:" Margin="0,0,0,5"/>
-            <TextBox x:Name="NotesBox" AcceptsReturn="True" Height="150" TextWrapping="Wrap"/>
-            <Button Content="Завершити прийом" Margin="0,10,0,0" Click="Complete_Click"/>
+        Title="Завершення прийому" Height="650" Width="700"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <ScrollViewer>
+        <StackPanel Margin="20" VerticalAlignment="Top">
+
+            <!-- ✅ Кнопки вибору результату прийому -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,15">
+                <Button Content="Пацієнт не з’явився" Click="NoShow_Click" Width="180" Margin="0,0,10,0"/>
+                <Button Content="Прийом завершено" Click="EnableEditing_Click" Width="180" Background="LightGreen"/>
+            </StackPanel>
+
+            <!-- 🔹 Інформація про пацієнта -->
+            <GroupBox Header="Пацієнт" Margin="0,0,0,10">
+                <StackPanel Margin="10">
+                    <TextBlock x:Name="PatientNameText" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="Номер картки:"/>
+                    <TextBlock x:Name="CardNumberText" FontStyle="Italic"/>
+                    <TextBlock Text="Група крові:"/>
+                    <ComboBox x:Name="BloodTypeComboBox" Width="100">
+                        <ComboBoxItem Content="A+" />
+                        <ComboBoxItem Content="A-" />
+                        <ComboBoxItem Content="B+" />
+                        <ComboBoxItem Content="B-" />
+                        <ComboBoxItem Content="AB+" />
+                        <ComboBoxItem Content="AB-" />
+                        <ComboBoxItem Content="O+" />
+                        <ComboBoxItem Content="O-" />
+                    </ComboBox>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- 🔸 Алергії -->
+            <GroupBox Header="Алергії" Margin="0,0,0,10">
+                <StackPanel Margin="10">
+                    <ListBox x:Name="AllergyList" Height="80"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <TextBox x:Name="NewAllergyBox" Width="200"/>
+                        <Button x:Name="AddAllergyButton" Content="Додати" Width="80" Margin="10,0,0,0" Click="AddAllergy_Click"/>
+                        <Button x:Name="RemoveAllergyButton" Content="Видалити" Width="80" Margin="10,0,0,0" Click="RemoveAllergy_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- 🔸 Хронічні захворювання -->
+            <GroupBox Header="Хронічні хвороби" Margin="0,0,0,10">
+                <StackPanel Margin="10">
+                    <ListBox x:Name="DiseaseList" Height="80"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <TextBox x:Name="NewDiseaseBox" Width="200"/>
+                        <Button x:Name="AddDiseaseButton" Content="Додати" Width="80" Margin="10,0,0,0" Click="AddDisease_Click"/>
+                        <Button x:Name="RemoveDiseaseButton" Content="Видалити" Width="80" Margin="10,0,0,0" Click="RemoveDisease_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- 📝 Нотатки -->
+            <TextBlock Text="Нотатки до прийому:" FontWeight="SemiBold"/>
+            <TextBox x:Name="NotesBox" AcceptsReturn="True" Height="120" TextWrapping="Wrap"/>
+
+            <!-- 🔒 Концева кнопка -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button Content="Зберегти та закрити" Click="Complete_Click" Width="200" Background="LightGreen"/>
+            </StackPanel>
+
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </Window>
