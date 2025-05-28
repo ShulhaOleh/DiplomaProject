@@ -18,7 +18,12 @@ namespace Clinic.View
             if (DataContext is RegisterPatientViewModel vm &&
                 ((DataGrid)sender).SelectedItem is Patient patient)
             {
-                vm.RegisterAppointment(patient);
+                var timeWindow = new SelectAppointmentTimeWindow(patient);
+                if (timeWindow.ShowDialog() == true)
+                {
+                    var selectedDateTime = timeWindow.SelectedDateTime;
+                    vm.RegisterAppointment(patient, selectedDateTime);
+                }
             }
         }
     }

@@ -34,7 +34,6 @@ namespace Clinic.ViewModels
             _doctorId = id;
             _role = role;
 
-            // завантажити всіх пацієнтів одразу
             LoadFilteredPatients(string.Empty);
         }
 
@@ -86,7 +85,7 @@ namespace Clinic.ViewModels
             }
         }
 
-        public void RegisterAppointment(Patient patient)
+        public void RegisterAppointment(Patient patient, DateTime selectedDateTime)
         {
             using var conn = ClinicDB.GetConnection();
             conn.Open();
@@ -112,30 +111,34 @@ namespace Clinic.ViewModels
                 }
             }
 
-            // уникаємо повторного запису на той самий день
             var checkCmd = new MySqlCommand(@"
-                SELECT COUNT(*) FROM Appointments 
-                WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = CURDATE()", conn);
+                                            SELECT COUNT(*) FROM Appointments 
+                                            WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day", conn);
             checkCmd.Parameters.AddWithValue("@doc", _doctorId);
             checkCmd.Parameters.AddWithValue("@pat", patientId);
+            checkCmd.Parameters.AddWithValue("@day", selectedDateTime.Date);
+
             int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
             if (exists > 0)
             {
-                System.Windows.MessageBox.Show("Пацієнт уже записаний на сьогодні.");
+                System.Windows.MessageBox.Show("Пацієнт уже записаний на цей день.");
                 return;
             }
 
             string query = @"
-                INSERT INTO Appointments (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID)
-                VALUES (@doc, @pat, @date, 'Очікується', @card)";
+                            INSERT INTO Appointments (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID)
+                            VALUES (@doc, @pat, @date, 'Очікується', @card)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@doc", _doctorId);
             cmd.Parameters.AddWithValue("@pat", patientId);
-            cmd.Parameters.AddWithValue("@date", DateTime.Now);
+            cmd.Parameters.AddWithValue("@date", selectedDateTime);
             cmd.Parameters.AddWithValue("@card", cardId);
 
             cmd.ExecuteNonQuery();
+
+            System.Windows.MessageBox.Show("Пацієнта успішно записано на прийом.");
         }
+
     }
 }
