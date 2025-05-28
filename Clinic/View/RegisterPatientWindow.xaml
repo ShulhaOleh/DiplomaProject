@@ -23,9 +23,9 @@
                   SelectionMode="Single"
                   MouseDoubleClick="DataGrid_MouseDoubleClick">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ПІБ" Binding="{Binding FullName}" Width="*"/>
+                <DataGridTextColumn Header="ПІ" Binding="{Binding FullName}" Width="*"/>
                 <DataGridTextColumn Header="Номер телефону" Binding="{Binding PhoneNumber}" Width="*"/>
-                <DataGridTextColumn Header="Дата народження" Binding="{Binding BirthDate, StringFormat='dd.MM.yyyy'}" Width="*"/>
+                <DataGridTextColumn Header="Дата народження" Binding="{Binding DateOfBirth, StringFormat='dd.MM.yyyy'}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

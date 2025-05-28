@@ -15,26 +15,6 @@
                 <ResourceDictionary Source="Languages/Resources.uk.xaml" />
                 <ResourceDictionary Source="Languages/Resources.en.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <!-- Doctor ViewModels -->
-            <DataTemplate DataType="{x:Type vmDoctor:DoctorAppointmentsViewModel}">
-                <viewDoctor:DoctorAppointmentsView />
-            </DataTemplate>
-
-            <!-- Спільний для лікаря та ресепшіоніста -->
-            <DataTemplate DataType="{x:Type vm:RegisterPatientViewModel}">
-                <view:RegisterPatientWindow />
-            </DataTemplate>
-
-            <!-- Receptionist -->
-            <DataTemplate DataType="{x:Type vmReceptionist:AppointmentRegistrationViewModel}">
-                <viewReceptionist:AppointmentRegistrationView />
-            </DataTemplate>
-
-            <!-- Admin -->
-            <DataTemplate DataType="{x:Type vmAdmin:AdminUserManagementViewModel}">
-                <viewAdmin:AdminUserManagementView />
-            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

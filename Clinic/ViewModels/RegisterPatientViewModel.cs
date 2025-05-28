@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using Clinic.DB;
 using Clinic.Models;
 using MySql.Data.MySqlClient;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Clinic.ViewModels
 {
     public class RegisterPatientViewModel : BaseViewModel
     {
-        public ObservableCollection<Patient> FilteredPatients { get; set; } = new();
-        private string _searchQuery;
-
         private readonly int _doctorId;
+        private readonly string _role;
+
+        public ObservableCollection<Patient> FilteredPatients { get; } = new();
+        private string _searchQuery;
 
         public string SearchQuery
         {
@@ -29,26 +29,48 @@ namespace Clinic.ViewModels
             }
         }
 
-        public RegisterPatientViewModel(int doctorId)
+        public RegisterPatientViewModel(int id, string role = "Doctor")
         {
-            _doctorId = doctorId;
+            _doctorId = id;
+            _role = role;
+
+            // завантажити всіх пацієнтів одразу
+            LoadFilteredPatients(string.Empty);
         }
 
         private void LoadFilteredPatients(string query)
         {
             FilteredPatients.Clear();
-            if (string.IsNullOrWhiteSpace(query)) return;
 
-            using var conn = DB.ClinicDB.GetConnection();
+            using var conn = ClinicDB.GetConnection();
             conn.Open();
 
             string sql = @"
-                SELECT PatientID, FirstName, LastName, PhoneNumber, BirthDate
-                FROM Patients
-                WHERE CONCAT(FirstName, ' ', LastName) LIKE @q";
+                SELECT PatientID, FirstName, LastName, PhoneNumber, DateOfBirth
+                FROM Patients";
+
+            var parts = query?.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
+
+            if (parts.Length == 1)
+            {
+                sql += " WHERE FirstName LIKE @p1 OR LastName LIKE @p1";
+            }
+            else if (parts.Length >= 2)
+            {
+                sql += " WHERE (FirstName LIKE @p1 AND LastName LIKE @p2) OR (FirstName LIKE @p2 AND LastName LIKE @p1)";
+            }
 
             using var cmd = new MySqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@q", $"%{query}%");
+
+            if (parts.Length == 1)
+            {
+                cmd.Parameters.AddWithValue("@p1", $"%{parts[0]}%");
+            }
+            else if (parts.Length >= 2)
+            {
+                cmd.Parameters.AddWithValue("@p1", $"%{parts[0]}%");
+                cmd.Parameters.AddWithValue("@p2", $"%{parts[1]}%");
+            }
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -59,30 +81,61 @@ namespace Clinic.ViewModels
                     FirstName = reader.GetString("FirstName"),
                     LastName = reader.GetString("LastName"),
                     PhoneNumber = reader.GetString("PhoneNumber"),
-                    BirthDate = reader.GetDateTime("BirthDate")
+                    DateOfBirth = reader.GetDateTime("DateOfBirth")
                 });
             }
         }
 
         public void RegisterAppointment(Patient patient)
         {
-            using var conn = DB.ClinicDB.GetConnection();
+            using var conn = ClinicDB.GetConnection();
             conn.Open();
 
+            int patientId = patient.PatientID;
+
+            int cardId;
+            using (var cmdCard = new MySqlCommand("SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid", conn))
+            {
+                cmdCard.Parameters.AddWithValue("@pid", patientId);
+                var result = cmdCard.ExecuteScalar();
+
+                if (result != null)
+                {
+                    cardId = Convert.ToInt32(result);
+                }
+                else
+                {
+                    var insertCardCmd = new MySqlCommand(
+                        "INSERT INTO AmbulatoryCards (PatientID, CreationDate, CardNumber) VALUES (@pid, NOW(), UUID()); SELECT LAST_INSERT_ID();", conn);
+                    insertCardCmd.Parameters.AddWithValue("@pid", patientId);
+                    cardId = Convert.ToInt32(insertCardCmd.ExecuteScalar());
+                }
+            }
+
+            // уникаємо повторного запису на той самий день
+            var checkCmd = new MySqlCommand(@"
+                SELECT COUNT(*) FROM Appointments 
+                WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = CURDATE()", conn);
+            checkCmd.Parameters.AddWithValue("@doc", _doctorId);
+            checkCmd.Parameters.AddWithValue("@pat", patientId);
+            int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
+            if (exists > 0)
+            {
+                System.Windows.MessageBox.Show("Пацієнт уже записаний на сьогодні.");
+                return;
+            }
+
             string query = @"
-                INSERT INTO Appointments (DoctorID, PatientID, AppointmentDate, Status)
-                VALUES (@doc, @pat, @date, 'Очікується')";
+                INSERT INTO Appointments (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID)
+                VALUES (@doc, @pat, @date, 'Очікується', @card)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@doc", _doctorId);
-            cmd.Parameters.AddWithValue("@pat", patient.PatientID);
+            cmd.Parameters.AddWithValue("@pat", patientId);
             cmd.Parameters.AddWithValue("@date", DateTime.Now);
+            cmd.Parameters.AddWithValue("@card", cardId);
 
             cmd.ExecuteNonQuery();
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

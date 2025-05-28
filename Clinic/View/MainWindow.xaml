@@ -55,7 +55,8 @@
         </Border>
 
 
-        <ContentControl Content="{Binding CurrentViewModel}"/>
+        <ContentControl Content="{Binding CurrentView}" />
+
 
     </DockPanel>
 </Window>
