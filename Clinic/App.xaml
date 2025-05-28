@@ -1,9 +1,14 @@
 <Application x:Class="Clinic.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:Clinic.ViewModels.Doctor"
-             xmlns:view="clr-namespace:Clinic.View.Doctor"
-             StartupUri="View/Login.xaml">
+             xmlns:vm="clr-namespace:Clinic.ViewModels"
+             xmlns:vmDoctor="clr-namespace:Clinic.ViewModels.Doctor"
+             xmlns:vmAdmin="clr-namespace:Clinic.ViewModels.Admin"
+             xmlns:vmReceptionist="clr-namespace:Clinic.ViewModels.Receptionist"
+             xmlns:view="clr-namespace:Clinic.View"
+             xmlns:viewDoctor="clr-namespace:Clinic.View.Doctor"
+             xmlns:viewAdmin="clr-namespace:Clinic.View.Admin"
+             xmlns:viewReceptionist="clr-namespace:Clinic.View.Receptionist">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -11,8 +16,24 @@
                 <ResourceDictionary Source="Languages/Resources.en.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <DataTemplate DataType="{x:Type vm:DoctorAppointmentsViewModel}">
-                <view:DoctorAppointmentsView />
+            <!-- Doctor ViewModels -->
+            <DataTemplate DataType="{x:Type vmDoctor:DoctorAppointmentsViewModel}">
+                <viewDoctor:DoctorAppointmentsView />
+            </DataTemplate>
+
+            <!-- Спільний для лікаря та ресепшіоніста -->
+            <DataTemplate DataType="{x:Type vm:RegisterPatientViewModel}">
+                <view:RegisterPatientWindow />
+            </DataTemplate>
+
+            <!-- Receptionist -->
+            <DataTemplate DataType="{x:Type vmReceptionist:AppointmentRegistrationViewModel}">
+                <viewReceptionist:AppointmentRegistrationView />
+            </DataTemplate>
+
+            <!-- Admin -->
+            <DataTemplate DataType="{x:Type vmAdmin:AdminUserManagementViewModel}">
+                <viewAdmin:AdminUserManagementView />
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

@@ -7,13 +7,11 @@
     <ScrollViewer>
         <StackPanel Margin="20" VerticalAlignment="Top">
 
-            <!-- ✅ Кнопки вибору результату прийому -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,15">
                 <Button Content="Пацієнт не з’явився" Click="NoShow_Click" Width="180" Margin="0,0,10,0"/>
                 <Button Content="Прийом завершено" Click="EnableEditing_Click" Width="180" Background="LightGreen"/>
             </StackPanel>
 
-            <!-- 🔹 Інформація про пацієнта -->
             <GroupBox Header="Пацієнт" Margin="0,0,0,10">
                 <StackPanel Margin="10">
                     <TextBlock x:Name="PatientNameText" FontWeight="Bold" FontSize="16"/>
@@ -33,7 +31,6 @@
                 </StackPanel>
             </GroupBox>
 
-            <!-- 🔸 Алергії -->
             <GroupBox Header="Алергії" Margin="0,0,0,10">
                 <StackPanel Margin="10">
                     <ListBox x:Name="AllergyList" Height="80"/>
@@ -45,7 +42,6 @@
                 </StackPanel>
             </GroupBox>
 
-            <!-- 🔸 Хронічні захворювання -->
             <GroupBox Header="Хронічні хвороби" Margin="0,0,0,10">
                 <StackPanel Margin="10">
                     <ListBox x:Name="DiseaseList" Height="80"/>
@@ -57,11 +53,9 @@
                 </StackPanel>
             </GroupBox>
 
-            <!-- 📝 Нотатки -->
             <TextBlock Text="Нотатки до прийому:" FontWeight="SemiBold"/>
             <TextBox x:Name="NotesBox" AcceptsReturn="True" Height="120" TextWrapping="Wrap"/>
 
-            <!-- 🔒 Концева кнопка -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
                 <Button Content="Зберегти та закрити" Click="Complete_Click" Width="200" Background="LightGreen"/>
             </StackPanel>

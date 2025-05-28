@@ -5,6 +5,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <AppDesignerFolder>Langs</AppDesignerFolder>
+    <PackageIcon></PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,6 +39,10 @@
     <AutoGen>True</AutoGen>
     <DependentUpon>Settings.settings</DependentUpon>
   </Compile>
+  <None Update="Assets\icon.png">
+    <Pack>True</Pack>
+    <PackagePath>\</PackagePath>
+  </None>
   <None Update="Properties\Settings.settings">
     <Generator>PublicSettingsSingleFileGenerator</Generator>
     <LastGenOutput>Settings.Designer.cs</LastGenOutput>

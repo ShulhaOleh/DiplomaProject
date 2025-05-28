@@ -5,6 +5,8 @@ using System.Data;
 using Clinic.Models;
 using MySql.Data.MySqlClient;
 using System.Linq;
+using System.Windows.Input;
+using System.Windows;
 
 namespace Clinic.ViewModels.Doctor
 {
@@ -13,12 +15,29 @@ namespace Clinic.ViewModels.Doctor
         public ObservableCollection<AppointmentModel> TodayAppointments { get; set; } = new();
         public ObservableCollection<AppointmentModel> UpcomingAppointments { get; set; } = new();
         public ObservableCollection<AppointmentModel> PastAppointments { get; set; } = new();
+        public ICommand RegisterPatientCommand { get; set; }
 
         private readonly int _doctorId;
 
         public DoctorAppointmentsViewModel(int doctorId)
         {
             _doctorId = doctorId;
+            RegisterPatientCommand = new RelayCommand<object>(RegisterPatient);
+
+            LoadAppointmentsFromDatabase();
+        }
+
+        private void RegisterPatient(object obj)
+        {
+            string fullName = obj as string;
+            if (string.IsNullOrWhiteSpace(fullName))
+            {
+                MessageBox.Show("Введіть повне ім’я пацієнта.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var date = DateTime.Now.Date;
+            AppointmentService.RegisterAppointment(fullName, _doctorId, date, "Doctor");
             LoadAppointmentsFromDatabase();
         }
 
@@ -112,10 +131,8 @@ namespace Clinic.ViewModels.Doctor
             cmd.Parameters.AddWithValue("@notes", appointment.Notes);
             cmd.Parameters.AddWithValue("@id", appointment.AppointmentID);
 
-
             cmd.ExecuteNonQuery();
             LoadAppointmentsFromDatabase();
         }
-
     }
 }

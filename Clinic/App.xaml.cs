@@ -9,20 +9,31 @@ namespace Clinic
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            base.OnStartup(e);
-
-            string savedLang = Clinic.Properties.Settings.Default.AppLanguage;
-            if (string.IsNullOrEmpty(savedLang))
+            try
             {
-                string systemLang = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
-                savedLang = systemLang == "uk" ? "uk" : "en";
-                Clinic.Properties.Settings.Default.AppLanguage = savedLang;
-                Clinic.Properties.Settings.Default.Save();
-            }
+                base.OnStartup(e);
 
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo(savedLang);
-            Thread.CurrentThread.CurrentCulture = new CultureInfo(savedLang);
+                string savedLang = Clinic.Properties.Settings.Default.AppLanguage;
+                if (string.IsNullOrEmpty(savedLang))
+                {
+                    string systemLang = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+                    savedLang = systemLang == "uk" ? "uk" : "en";
+                    Clinic.Properties.Settings.Default.AppLanguage = savedLang;
+                    Clinic.Properties.Settings.Default.Save();
+                }
+
+                Thread.CurrentThread.CurrentUICulture = new CultureInfo(savedLang);
+                Thread.CurrentThread.CurrentCulture = new CultureInfo(savedLang);
+
+                new View.Login().Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("FATAL ERROR: " + ex.Message);
+                Environment.Exit(1);
+            }
         }
+
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);

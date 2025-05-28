@@ -1,5 +1,4 @@
-﻿// CompleteAppointmentWindow.xaml.cs
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -142,10 +141,10 @@ namespace Clinic.View.Doctor
             cmd.ExecuteNonQuery();
         }
 
-        private void AddAllergy_Click(object sender, RoutedEventArgs e) { /* ... залишено без змін ... */ }
-        private void RemoveAllergy_Click(object sender, RoutedEventArgs e) { /* ... залишено без змін ... */ }
-        private void AddDisease_Click(object sender, RoutedEventArgs e) { /* ... залишено без змін ... */ }
-        private void RemoveDisease_Click(object sender, RoutedEventArgs e) { /* ... залишено без змін ... */ }
+        private void AddAllergy_Click(object sender, RoutedEventArgs e) { }
+        private void RemoveAllergy_Click(object sender, RoutedEventArgs e) { }
+        private void AddDisease_Click(object sender, RoutedEventArgs e) { }
+        private void RemoveDisease_Click(object sender, RoutedEventArgs e) { }
 
         private void Complete_Click(object sender, RoutedEventArgs e)
         {

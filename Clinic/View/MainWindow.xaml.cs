@@ -8,6 +8,7 @@ using Clinic.ViewModels;
 using Clinic.ViewModels.Doctor;
 using Clinic.ViewModels.Receptionist;
 using Clinic.ViewModels.Admin;
+using Clinic.View;
 
 namespace Clinic.View
 {
@@ -17,17 +18,24 @@ namespace Clinic.View
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel(fullName, role, linkedId ?? 0);
-
         }
 
-
-        private void Menu_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void MenuItem_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (DataContext is MainWindowViewModel vm && sender is ListBox lb && lb.SelectedItem is MenuItem item && item.ViewModel is BaseViewModel target)
+            if (DataContext is MainWindowViewModel vm && ((ListBox)sender).SelectedItem is Clinic.ViewModels.MenuItem item)
             {
-                vm.NavigateCommand.Execute(target);
+                if (item.IsAction)
+                {
+                    item.Action?.Invoke();
+                    ((ListBox)sender).SelectedItem = null;
+                }
+                if (item.ViewModel is BaseViewModel baseVM)
+                {
+                    vm.CurrentViewModel = baseVM;
+                }
             }
         }
+
 
         private void ProfileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -58,6 +66,19 @@ namespace Clinic.View
 
                         menu.Items.Add(menuItem);
                     }
+                    else if (item.IsAction && item.Action != null)
+                    {
+                        var menuItem = new System.Windows.Controls.MenuItem
+                        {
+                            Header = item.Title,
+                            FontSize = 14,
+                            Padding = new Thickness(12, 6, 12, 6),
+                            Command = new RelayCommand(item.Action),
+                            Style = (Style)FindResource(typeof(System.Windows.Controls.MenuItem))
+                        };
+
+                        menu.Items.Add(menuItem);
+                    }
                 }
 
                 menu.Items.Add(new Separator());
@@ -78,6 +99,7 @@ namespace Clinic.View
             menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
             menu.IsOpen = true;
         }
+
 
         private void Logout()
         {

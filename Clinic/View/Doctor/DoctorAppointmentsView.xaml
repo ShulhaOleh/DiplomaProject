@@ -39,7 +39,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <TabControl>
+        <TabControl Grid.Row="1">
             <TabItem Header="Сьогодні">
                 <DataGrid ItemsSource="{Binding Source={StaticResource GroupedAppointments}}"
                           MouseDoubleClick="DataGrid_MouseDoubleClick"
