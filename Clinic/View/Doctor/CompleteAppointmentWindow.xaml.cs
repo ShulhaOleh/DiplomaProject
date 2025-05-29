@@ -10,10 +10,10 @@ namespace Clinic.View.Doctor
 {
     public partial class CompleteAppointmentWindow : Window
     {
-        private readonly AppointmentModel _appointment;
+        private readonly Appointment _appointment;
         private int _cardId;
 
-        public CompleteAppointmentWindow(AppointmentModel appointment)
+        public CompleteAppointmentWindow(Appointment appointment)
         {
             InitializeComponent();
             _appointment = appointment;

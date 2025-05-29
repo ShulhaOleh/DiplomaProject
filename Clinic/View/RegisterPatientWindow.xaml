@@ -28,5 +28,8 @@
                 <DataGridTextColumn Header="Дата народження" Binding="{Binding DateOfBirth, StringFormat='dd.MM.yyyy'}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
+
+        <TextBlock Text="Примітка до прийому:" Margin="0,10,0,2" FontWeight="Bold"/>
+        <TextBox Text="{Binding Note}" Height="80" AcceptsReturn="True" TextWrapping="Wrap"/>
     </Grid>
 </UserControl>

@@ -148,7 +148,7 @@ namespace Clinic.ViewModels
                         break;
                     case "Receptionist":
                         table = "Receptionist";
-                        idColumn = "AdministratorID";
+                        idColumn = "ReceptionistID";
                         break;
                     default:
                         return "Невідома роль";

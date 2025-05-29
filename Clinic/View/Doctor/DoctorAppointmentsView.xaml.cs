@@ -15,7 +15,7 @@ namespace Clinic.View.Doctor
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is not DataGrid dg || dg.SelectedItem is not AppointmentModel selected)
+            if (sender is not DataGrid dg || dg.SelectedItem is not Appointment selected)
                 return;
 
             if (selected.Status == "Прийом завершено")

@@ -12,9 +12,9 @@ namespace Clinic.ViewModels.Doctor
 {
     public class DoctorAppointmentsViewModel : BaseViewModel
     {
-        public ObservableCollection<AppointmentModel> TodayAppointments { get; set; } = new();
-        public ObservableCollection<AppointmentModel> UpcomingAppointments { get; set; } = new();
-        public ObservableCollection<AppointmentModel> PastAppointments { get; set; } = new();
+        public ObservableCollection<Appointment> TodayAppointments { get; set; } = new();
+        public ObservableCollection<Appointment> UpcomingAppointments { get; set; } = new();
+        public ObservableCollection<Appointment> PastAppointments { get; set; } = new();
         public ICommand RegisterPatientCommand { get; set; }
 
         private readonly int _doctorId;
@@ -43,7 +43,7 @@ namespace Clinic.ViewModels.Doctor
 
         public void LoadAppointmentsFromDatabase()
         {
-            var appointments = new List<AppointmentModel>();
+            var appointments = new List<Appointment>();
 
             using (var connection = Clinic.DB.ClinicDB.GetConnection())
             {
@@ -70,7 +70,7 @@ namespace Clinic.ViewModels.Doctor
                     {
                         while (reader.Read())
                         {
-                            var model = new AppointmentModel
+                            var model = new Appointment
                             {
                                 AppointmentID = reader.GetInt32("AppointmentID"),
                                 PatientName = reader.GetString("PatientName"),
@@ -116,7 +116,7 @@ namespace Clinic.ViewModels.Doctor
             }
         }
 
-        public void CompleteAppointment(AppointmentModel appointment)
+        public void CompleteAppointment(Appointment appointment)
         {
             using var conn = Clinic.DB.ClinicDB.GetConnection();
             conn.Open();

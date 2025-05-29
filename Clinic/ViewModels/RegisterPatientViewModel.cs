@@ -4,12 +4,13 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 
 namespace Clinic.ViewModels
 {
     public class RegisterPatientViewModel : BaseViewModel
     {
-        private readonly int _doctorId;
+        private readonly int _userId;
         private readonly string _role;
 
         public ObservableCollection<Patient> FilteredPatients { get; } = new();
@@ -29,9 +30,20 @@ namespace Clinic.ViewModels
             }
         }
 
+        private string _note;
+        public string Note
+        {
+            get => _note;
+            set
+            {
+                _note = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RegisterPatientViewModel(int id, string role = "Doctor")
         {
-            _doctorId = id;
+            _userId = id;
             _role = role;
 
             LoadFilteredPatients(string.Empty);
@@ -44,27 +56,17 @@ namespace Clinic.ViewModels
             using var conn = ClinicDB.GetConnection();
             conn.Open();
 
-            string sql = @"
-                SELECT PatientID, FirstName, LastName, PhoneNumber, DateOfBirth
-                FROM Patients";
-
+            string sql = "SELECT PatientID, FirstName, LastName, PhoneNumber, DateOfBirth FROM Patients";
             var parts = query?.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
 
             if (parts.Length == 1)
-            {
                 sql += " WHERE FirstName LIKE @p1 OR LastName LIKE @p1";
-            }
             else if (parts.Length >= 2)
-            {
                 sql += " WHERE (FirstName LIKE @p1 AND LastName LIKE @p2) OR (FirstName LIKE @p2 AND LastName LIKE @p1)";
-            }
 
             using var cmd = new MySqlCommand(sql, conn);
-
             if (parts.Length == 1)
-            {
                 cmd.Parameters.AddWithValue("@p1", $"%{parts[0]}%");
-            }
             else if (parts.Length >= 2)
             {
                 cmd.Parameters.AddWithValue("@p1", $"%{parts[0]}%");
@@ -92,6 +94,7 @@ namespace Clinic.ViewModels
 
             int patientId = patient.PatientID;
 
+            // Перевірка наявності/створення амбулаторної картки
             int cardId;
             using (var cmdCard = new MySqlCommand("SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid", conn))
             {
@@ -111,34 +114,71 @@ namespace Clinic.ViewModels
                 }
             }
 
+            // Перевірка на дублікати прийомів
             var checkCmd = new MySqlCommand(@"
-                                            SELECT COUNT(*) FROM Appointments 
-                                            WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day", conn);
-            checkCmd.Parameters.AddWithValue("@doc", _doctorId);
+                SELECT COUNT(*) FROM Appointments 
+                WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day", conn);
+            checkCmd.Parameters.AddWithValue("@doc", _userId);
             checkCmd.Parameters.AddWithValue("@pat", patientId);
             checkCmd.Parameters.AddWithValue("@day", selectedDateTime.Date);
 
             int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
             if (exists > 0)
             {
-                System.Windows.MessageBox.Show("Пацієнт уже записаний на цей день.");
+                MessageBox.Show("Пацієнт уже записаний на цей день.");
                 return;
             }
 
-            string query = @"
-                            INSERT INTO Appointments (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID)
-                            VALUES (@doc, @pat, @date, 'Очікується', @card)";
+            // Підготовка команди
+            string query;
+            var cmd = new MySqlCommand();
+            cmd.Connection = conn;
 
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@doc", _doctorId);
+            if (_role == "Receptionist")
+            {
+                var doctorId = PromptDoctorId();
+                if (doctorId == null)
+                    return;
+
+                query = @"
+                    INSERT INTO Appointments 
+                        (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, ReceptionistID, Notes)
+                    VALUES 
+                        (@doc, @pat, @date, 'Очікується', @card, @rec, @note)";
+
+                cmd.Parameters.AddWithValue("@doc", doctorId);
+                cmd.Parameters.AddWithValue("@rec", _userId);
+            }
+            else
+            {
+                query = @"
+                    INSERT INTO Appointments 
+                        (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, Notes)
+                    VALUES 
+                        (@doc, @pat, @date, 'Очікується', @card, @note)";
+
+                cmd.Parameters.AddWithValue("@doc", _userId);
+            }
+
             cmd.Parameters.AddWithValue("@pat", patientId);
             cmd.Parameters.AddWithValue("@date", selectedDateTime);
             cmd.Parameters.AddWithValue("@card", cardId);
+            cmd.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
 
+            cmd.CommandText = query;
             cmd.ExecuteNonQuery();
 
-            System.Windows.MessageBox.Show("Пацієнта успішно записано на прийом.");
+            MessageBox.Show("Пацієнта успішно записано на прийом.");
         }
 
+        private int? PromptDoctorId()
+        {
+            var window = new View.Receptionist.SelectDoctorWindow();
+            if (window.ShowDialog() == true)
+            {
+                return window.SelectedDoctor.DoctorID;
+            }
+            return null;
+        }
     }
 }

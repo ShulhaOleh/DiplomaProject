@@ -15,12 +15,9 @@ using System.Windows.Shapes;
 
 namespace Clinic.View.Receptionist
 {
-    /// <summary>
-    /// Interaction logic for AppointmentRegistrationView.xaml
-    /// </summary>
-    public partial class AppointmentRegistrationView : UserControl
+    public partial class AppointmentManagementView : UserControl
     {
-        public AppointmentRegistrationView()
+        public AppointmentManagementView()
         {
             InitializeComponent();
         }

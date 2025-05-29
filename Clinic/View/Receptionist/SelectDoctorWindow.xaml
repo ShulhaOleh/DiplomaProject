@@ -1,0 +1,26 @@
+﻿<Window x:Class="Clinic.View.Receptionist.SelectDoctorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Вибір лікаря" Height="400" Width="500" WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Оберіть лікаря для запису:" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+
+        <DataGrid x:Name="DoctorGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False"
+                  SelectionMode="Single" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding DoctorID}" Width="*" />
+                <DataGridTextColumn Header="ПІБ" Binding="{Binding FullName}" Width="2*" />
+                <DataGridTextColumn Header="Спеціальність" Binding="{Binding Specialty}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Content="Підтвердити" Grid.Row="2" Height="35" Margin="0,10,0,0"
+                HorizontalAlignment="Right" Width="120" Click="Confirm_Click"/>
+    </Grid>
+</Window>
