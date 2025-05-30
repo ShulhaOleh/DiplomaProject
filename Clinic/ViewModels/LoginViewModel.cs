@@ -116,7 +116,7 @@ namespace Clinic.ViewModels
                     string fullName = GetFullNameByRole(role, linkedId);
                     if (fullName != null)
                     {
-                        var mainWindow = new View.MainWindow(fullName, role, linkedId);
+                        var mainWindow = new View.MainWindow(fullName, role, linkedId, Username);
 
                         mainWindow.Show();
                         CloseLoginWindow();

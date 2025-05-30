@@ -13,6 +13,7 @@ namespace Clinic.ViewModels
         public string FullName { get; }
         public string Role { get; }
         public int LinkedId { get; }
+        public string Username { get; }
 
         private BaseViewModel _currentViewModel;
         public BaseViewModel CurrentViewModel
@@ -31,7 +32,7 @@ namespace Clinic.ViewModels
         public ICommand NavigateCommand { get; }
 
 
-        public MainWindowViewModel(string fullName, string role, int linkedId)
+        public MainWindowViewModel(string fullName, string role, int linkedId, string username)
         {
             FullName = fullName;
             Role = role;
@@ -51,11 +52,12 @@ namespace Clinic.ViewModels
             }
             else if (Role == "Admin")
             {
-                MenuItems.Add(new MenuItem("Керування користувачами", new AdminUserManagementViewModel()));
+                MenuItems.Add(new MenuItem("Керування користувачами", new AdminUserManagementViewModel(username)));
             }
 
             if (MenuItems.Count > 0)
                 CurrentViewModel = MenuItems[0].ViewModel;
         }
+
     }
 }

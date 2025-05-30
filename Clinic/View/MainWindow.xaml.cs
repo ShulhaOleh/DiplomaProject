@@ -14,10 +14,10 @@ namespace Clinic.View
 {
     public partial class MainWindow : Window
     {
-        public MainWindow(string fullName, string role, int? linkedId)
+        public MainWindow(string fullName, string role, int? linkedId, string username)
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel(fullName, role, linkedId ?? 0);
+            DataContext = new MainWindowViewModel(fullName, role, linkedId ?? 0, username);
         }
 
         private void MenuItem_SelectionChanged(object sender, SelectionChangedEventArgs e)
