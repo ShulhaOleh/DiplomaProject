@@ -94,7 +94,6 @@ namespace Clinic.ViewModels
 
             int patientId = patient.PatientID;
 
-            // Перевірка наявності/створення амбулаторної картки
             int cardId;
             using (var cmdCard = new MySqlCommand("SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid", conn))
             {
@@ -114,7 +113,6 @@ namespace Clinic.ViewModels
                 }
             }
 
-            // Перевірка на дублікати прийомів
             var checkCmd = new MySqlCommand(@"
                 SELECT COUNT(*) FROM Appointments 
                 WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day", conn);
@@ -129,7 +127,6 @@ namespace Clinic.ViewModels
                 return;
             }
 
-            // Підготовка команди
             string query;
             var cmd = new MySqlCommand();
             cmd.Connection = conn;
@@ -176,9 +173,11 @@ namespace Clinic.ViewModels
             var window = new View.Receptionist.SelectDoctorWindow();
             if (window.ShowDialog() == true)
             {
+                Note = window.Note;
                 return window.SelectedDoctor.DoctorID;
             }
             return null;
         }
+
     }
 }

@@ -46,6 +46,7 @@ namespace Clinic.ViewModels
             }
             else if (Role == "Receptionist")
             {
+                MenuItems.Add(new MenuItem("Керування прийомами", new AppointmentManagementViewModel(LinkedId)));
                 MenuItems.Add(new MenuItem("Запис на прийом", new RegisterPatientViewModel(LinkedId, "Receptionist")));
             }
             else if (Role == "Admin")

@@ -8,28 +8,27 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBox Grid.Row="0"
-                 Margin="0,0,0,10"
-                 Height="30"
-                 FontSize="14"
-                 Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"/>
+             Margin="0,0,0,10"
+             Height="30"
+             FontSize="14"
+             Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"/>
 
         <DataGrid Grid.Row="1"
-                  ItemsSource="{Binding FilteredPatients}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  SelectionMode="Single"
-                  MouseDoubleClick="DataGrid_MouseDoubleClick">
+              ItemsSource="{Binding FilteredPatients}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              SelectionMode="Single"
+              MouseDoubleClick="DataGrid_MouseDoubleClick">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ПІ" Binding="{Binding FullName}" Width="*"/>
-                <DataGridTextColumn Header="Номер телефону" Binding="{Binding PhoneNumber}" Width="*"/>
-                <DataGridTextColumn Header="Дата народження" Binding="{Binding DateOfBirth, StringFormat='dd.MM.yyyy'}" Width="*"/>
+                <DataGridTextColumn Header="ПІ" Binding="{Binding FullName}" Width="*" />
+                <DataGridTextColumn Header="Номер телефону" Binding="{Binding PhoneNumber}" Width="*" />
+                <DataGridTextColumn Header="Дата народження" Binding="{Binding DateOfBirth, StringFormat='dd.MM.yyyy'}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
-
-        <TextBlock Text="Примітка до прийому:" Margin="0,10,0,2" FontWeight="Bold"/>
-        <TextBox Text="{Binding Note}" Height="80" AcceptsReturn="True" TextWrapping="Wrap"/>
     </Grid>
 </UserControl>

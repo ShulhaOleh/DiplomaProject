@@ -9,6 +9,8 @@ namespace Clinic.View.Receptionist
     public partial class SelectDoctorWindow : Window
     {
         public Clinic.Models.Doctor SelectedDoctor => (Clinic.Models.Doctor)DoctorGrid.SelectedItem;
+        public string Note => NoteBox.Text;
+
 
 
         public SelectDoctorWindow()
