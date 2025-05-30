@@ -85,14 +85,24 @@ namespace Clinic.View
 
                 var logoutItem = new System.Windows.Controls.MenuItem
                 {
-                    Header = "Вийти",
+                    Header = "Розлогінитися",
                     FontSize = 14,
                     Padding = new Thickness(12, 6, 12, 6),
                     Command = new RelayCommand(Logout),
                     Style = (Style)FindResource(typeof(System.Windows.Controls.MenuItem))
                 };
 
+                var exitItem = new System.Windows.Controls.MenuItem
+                {
+                    Header = "Вийти",
+                    FontSize = 14,
+                    Padding = new Thickness(12, 6, 12, 6),
+                    Command = new RelayCommand(Exit),
+                    Style = (Style)FindResource(typeof(System.Windows.Controls.MenuItem))
+                };
+
                 menu.Items.Add(logoutItem);
+                menu.Items.Add(exitItem);
             }
 
             menu.PlacementTarget = (Button)sender;
@@ -101,9 +111,17 @@ namespace Clinic.View
         }
 
 
-        private void Logout()
+        private void Exit()
         {
             Close();
+        }
+
+        private void Logout()
+        {
+            var loginWindow = new Login();
+            loginWindow.Show();
+
+            this.Close();
         }
     }
 }
