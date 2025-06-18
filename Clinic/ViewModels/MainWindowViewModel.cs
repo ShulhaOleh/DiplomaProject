@@ -44,11 +44,13 @@ namespace Clinic.ViewModels
             {
                 MenuItems.Add(new MenuItem("Прийоми", new DoctorAppointmentsViewModel(LinkedId)));
                 MenuItems.Add(new MenuItem("Запис на прийом", new RegisterPatientViewModel(LinkedId, "Doctor")));
+                MenuItems.Add(new MenuItem("Профіль", new ProfileViewModel(LinkedId, "Doctor")));
             }
             else if (Role == "Receptionist")
             {
                 MenuItems.Add(new MenuItem("Керування прийомами", new AppointmentManagementViewModel(LinkedId)));
                 MenuItems.Add(new MenuItem("Запис на прийом", new RegisterPatientViewModel(LinkedId, "Receptionist")));
+                MenuItems.Add(new MenuItem("Профіль", new ProfileViewModel(LinkedId, "Receptionist")));
             }
             else if (Role == "Admin")
             {

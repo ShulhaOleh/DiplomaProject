@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Clinic.ViewModels.LoginViewModel" BaseTypeListCollapsed="true">
+    <Position X="13.75" Y="2.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAABAAAAIQAEIIAAgAAAAAACMQMQIACgAAA=</HashCode>
+      <FileName>ViewModels\LoginViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.AppointmentService" Collapsed="true">
+    <Position X="7.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\AppointmentService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.BaseViewModel" Collapsed="true">
+    <Position X="6" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\BaseViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Clinic.ViewModels.LanguageManager" Collapsed="true">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAASAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\LanguageManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.MainWindowViewModel">
+    <Position X="7.25" Y="2.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAACACAAAAANAAEQAAAAAAAAAAEAAAAAAAAAAAAgA=</HashCode>
+      <FileName>ViewModels\MainWindowViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.MenuItem" Collapsed="true">
+    <Position X="13.75" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAEAAAEAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>ViewModels\MenuItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.ProfileViewModel" Collapsed="true">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\ProfileViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.RegisterPatientViewModel">
+    <Position X="11.75" Y="2.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEAQAAAAAAAAAAAAAAAAAAAAAQEIAAAIgAABAAEAAQA=</HashCode>
+      <FileName>ViewModels\RegisterPatientViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.RelayCommand&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.75" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEACAAQAAECAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\RelayCommand.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Clinic.ViewModels.Receptionist.AppointmentManagementViewModel">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAEAEAAAAAAAAAAAAgAAAIAAAAAAAAAAAEA=</HashCode>
+      <FileName>ViewModels\Receptionist\AppointmentManagementViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.Admin.AdminUserManagementViewModel">
+    <Position X="2.75" Y="2.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAACIAABAAAAAEAAAQAAAAAAAAAAAgAIIAAQAAAgE=</HashCode>
+      <FileName>ViewModels\Admin\AdminUserManagementViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.ViewModels.Doctor.DoctorAppointmentsViewModel">
+    <Position X="5" Y="2.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABEAAAAAAAAAFAAAAAAAIAAABAAAIAAgAA=</HashCode>
+      <FileName>ViewModels\Doctor\DoctorAppointmentsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.Models.Admin" Collapsed="true">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAQAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Admin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.Models.Doctor" Collapsed="true">
+    <Position X="9.5" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AgAAAEAAAAAAAIAAAAAAAAAAAAACAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Models\Doctor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.Models.Patient" Collapsed="true">
+    <Position X="7.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAQAAAIAAAAAAQAAAAAAQAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Models\Patient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.Models.Receptionist" Collapsed="true">
+    <Position X="11.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAIAAAAAAAAAAAAAAAAAAAAAgAAAAAAg=</HashCode>
+      <FileName>Models\Receptionist.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.Models.User" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAIAAESAAAAgAAAAAAAAAAAAAAAAAEAo=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Clinic.Converters.DateOnlyConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\DateOnlyConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ViewResolver" Collapsed="true">
+    <Position X="2.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\ViewResolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

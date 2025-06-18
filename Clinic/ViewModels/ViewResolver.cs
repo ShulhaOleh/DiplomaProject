@@ -19,6 +19,7 @@ public static class ViewResolver
             RegisterPatientViewModel vm => new RegisterPatientWindow(vm),
             AppointmentManagementViewModel vm => new AppointmentManagementView { DataContext = vm },
             AdminUserManagementViewModel vm => new AdminUserManagementView { DataContext = vm },
+            ProfileViewModel vm => new ProfileView { DataContext = vm },
             _ => throw new NotSupportedException($"View for {viewModel.GetType().Name} is not registered.")
         };
     }

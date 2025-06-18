@@ -15,3 +15,4 @@ namespace Clinic.Models
         public string FullName => $"{LastName} {FirstName} {FathersName}";
     }
 }
+

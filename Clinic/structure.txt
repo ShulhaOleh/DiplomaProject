@@ -2,7 +2,8 @@ Clinic/
 ├── Assets
 │   └── catalog.png
 ├── Converters
-│   └── DateOnlyConverter.cs
+│   ├── DateOnlyConverter.cs
+│   └── InverseBoolConverter.cs
 ├── DB
 │   ├── AuthDB.cs
 │   ├── ClinicDB.cs
@@ -15,14 +16,19 @@ Clinic/
 │   ├── Appointment.cs
 │   ├── Doctor.cs
 │   ├── Patient.cs
-│   └── Receptionist.cs
+│   ├── Receptionist.cs
+│   └── User.cs
 ├── Properties
 │   ├── Settings.Designer.cs
 │   └── Settings.settings
 ├── View
 │   ├── Admin
 │   │   ├── AdminUserManagementView.xaml
-│   │   └── AdminUserManagementView.xaml.cs
+│   │   ├── AdminUserManagementView.xaml.cs
+│   │   ├── ConfirmAdminPasswordDialog.xaml
+│   │   ├── ConfirmAdminPasswordDialog.xaml.cs
+│   │   ├── EditUserDialog.xaml
+│   │   └── EditUserDialog.xaml.cs
 │   ├── Doctor
 │   │   ├── CompleteAppointmentWindow.xaml
 │   │   ├── CompleteAppointmentWindow.xaml.cs
@@ -37,6 +43,8 @@ Clinic/
 │   ├── Login.xaml.cs
 │   ├── MainWindow.xaml
 │   ├── MainWindow.xaml.cs
+│   ├── ProfileView.xaml
+│   ├── ProfileView.xaml.cs
 │   ├── RegisterPatientWindow.xaml
 │   ├── RegisterPatientWindow.xaml.cs
 │   ├── SelectAppointmentTimeWindow.xaml
@@ -54,6 +62,7 @@ Clinic/
 │   ├── LoginViewModel.cs
 │   ├── MainWindowViewModel.cs
 │   ├── MenuItem.cs
+│   ├── ProfileViewModel.cs
 │   ├── RegisterPatientViewModel.cs
 │   ├── RelayCommand.cs
 │   └── ViewResolver.cs
@@ -62,5 +71,6 @@ Clinic/
 ├── App.xaml.cs
 ├── App.xaml.Designer.cs
 ├── AssemblyInfo.cs
+├── ClassDiagram.cd
 ├── Clinic.csproj
 └── Clinic.csproj.user

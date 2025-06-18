@@ -11,7 +11,7 @@ using System;
 namespace Clinic.ViewModels
 {
 
-    public class LoginViewModel : INotifyPropertyChanged
+    public class LoginViewModel : BaseViewModel
     {
         public ICommand LoginCommand { get; }
 
