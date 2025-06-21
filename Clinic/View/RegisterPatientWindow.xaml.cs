@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Clinic.Models;
+using Clinic.View.Receptionist;
 using Clinic.ViewModels;
 
 namespace Clinic.View
@@ -18,13 +19,10 @@ namespace Clinic.View
             if (DataContext is RegisterPatientViewModel vm &&
                 ((DataGrid)sender).SelectedItem is Patient patient)
             {
-                var timeWindow = new SelectAppointmentTimeWindow(patient);
-                if (timeWindow.ShowDialog() == true)
-                {
-                    var selectedDateTime = timeWindow.SelectedDateTime;
-                    vm.RegisterAppointment(patient, selectedDateTime);
-                }
+                new SelectDoctorWindow(patient, vm).ShowDialog();
+
             }
         }
+
     }
 }

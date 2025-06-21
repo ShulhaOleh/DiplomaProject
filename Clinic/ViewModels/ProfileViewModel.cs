@@ -78,8 +78,6 @@ namespace Clinic.ViewModels
                 DateOfBirth = reader.IsDBNull(3) ? "" : reader.GetDateTime(3).ToString("dd.MM.yyyy");
                 PhoneNumber = reader.IsDBNull(4) ? "" : reader.GetString(4);
             }
-
-            MessageBox.Show($"FULL: {FullName}\nDOB: {DateOfBirth}\nPHONE: {PhoneNumber}");
         }
 
 

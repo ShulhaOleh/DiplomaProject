@@ -13,6 +13,8 @@ namespace Clinic.ViewModels
         private readonly int _userId;
         private readonly string _role;
 
+        public string Role => _role;
+
         public ObservableCollection<Patient> FilteredPatients { get; } = new();
         private string _searchQuery;
 
@@ -87,8 +89,68 @@ namespace Clinic.ViewModels
             }
         }
 
+        public void RegisterAppointment(Patient patient, DateTime selectedDateTime, Clinic.Models.Doctor doctor)
+        {
+            if (patient == null || doctor == null) return;
+
+            using var conn = ClinicDB.GetConnection();
+            conn.Open();
+
+            int patientId = patient.PatientID;
+
+            int cardId;
+            using (var cmdCard = new MySqlCommand("SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid", conn))
+            {
+                cmdCard.Parameters.AddWithValue("@pid", patientId);
+                var result = cmdCard.ExecuteScalar();
+
+                if (result != null)
+                {
+                    cardId = Convert.ToInt32(result);
+                }
+                else
+                {
+                    var insertCardCmd = new MySqlCommand(
+                        "INSERT INTO AmbulatoryCards (PatientID, CreationDate, CardNumber) VALUES (@pid, NOW(), UUID()); SELECT LAST_INSERT_ID();", conn);
+                    insertCardCmd.Parameters.AddWithValue("@pid", patientId);
+                    cardId = Convert.ToInt32(insertCardCmd.ExecuteScalar());
+                }
+            }
+
+            var checkCmd = new MySqlCommand(@"
+                SELECT COUNT(*) FROM Appointments 
+                WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day", conn);
+            checkCmd.Parameters.AddWithValue("@doc", doctor.DoctorID);
+            checkCmd.Parameters.AddWithValue("@pat", patientId);
+            checkCmd.Parameters.AddWithValue("@day", selectedDateTime.Date);
+
+            int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
+            if (exists > 0)
+            {
+                MessageBox.Show("Пацієнт уже записаний на цей день до цього лікаря.");
+                return;
+            }
+
+            var cmdInsert = new MySqlCommand(@"
+                INSERT INTO Appointments 
+                    (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, ReceptionistID, Notes)
+                VALUES 
+                    (@doc, @pat, @date, 'Очікується', @card, @rec, @note)", conn);
+
+            cmdInsert.Parameters.AddWithValue("@doc", doctor.DoctorID);
+            cmdInsert.Parameters.AddWithValue("@pat", patientId);
+            cmdInsert.Parameters.AddWithValue("@date", selectedDateTime);
+            cmdInsert.Parameters.AddWithValue("@card", cardId);
+            cmdInsert.Parameters.AddWithValue("@rec", _userId);
+            cmdInsert.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
+
+            cmdInsert.ExecuteNonQuery();
+        }
+
         public void RegisterAppointment(Patient patient, DateTime selectedDateTime)
         {
+            if (patient == null) return;
+
             using var conn = ClinicDB.GetConnection();
             conn.Open();
 
@@ -127,57 +189,19 @@ namespace Clinic.ViewModels
                 return;
             }
 
-            string query;
-            var cmd = new MySqlCommand();
-            cmd.Connection = conn;
+            var cmd = new MySqlCommand(@"
+                INSERT INTO Appointments 
+                    (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, Notes)
+                VALUES 
+                    (@doc, @pat, @date, 'Очікується', @card, @note)", conn);
 
-            if (_role == "Receptionist")
-            {
-                var doctorId = PromptDoctorId();
-                if (doctorId == null)
-                    return;
-
-                query = @"
-                    INSERT INTO Appointments 
-                        (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, ReceptionistID, Notes)
-                    VALUES 
-                        (@doc, @pat, @date, 'Очікується', @card, @rec, @note)";
-
-                cmd.Parameters.AddWithValue("@doc", doctorId);
-                cmd.Parameters.AddWithValue("@rec", _userId);
-            }
-            else
-            {
-                query = @"
-                    INSERT INTO Appointments 
-                        (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, Notes)
-                    VALUES 
-                        (@doc, @pat, @date, 'Очікується', @card, @note)";
-
-                cmd.Parameters.AddWithValue("@doc", _userId);
-            }
-
+            cmd.Parameters.AddWithValue("@doc", _userId);
             cmd.Parameters.AddWithValue("@pat", patientId);
             cmd.Parameters.AddWithValue("@date", selectedDateTime);
             cmd.Parameters.AddWithValue("@card", cardId);
             cmd.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
 
-            cmd.CommandText = query;
             cmd.ExecuteNonQuery();
-
-            MessageBox.Show("Пацієнта успішно записано на прийом.");
         }
-
-        private int? PromptDoctorId()
-        {
-            var window = new View.Receptionist.SelectDoctorWindow();
-            if (window.ShowDialog() == true)
-            {
-                Note = window.Note;
-                return window.SelectedDoctor.DoctorID;
-            }
-            return null;
-        }
-
     }
 }

@@ -1,46 +1,71 @@
 ﻿<Window x:Class="Clinic.View.Receptionist.SelectDoctorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Вибір лікаря" Height="500" Width="500"
+        Title="Вибір лікаря" Height="600" Width="950"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         WindowStartupLocation="CenterScreen">
 
-    <Grid Margin="10">
+    <Window.Resources>
+        <Style x:Key="ScheduleCellStyle" TargetType="DataGridCell">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsBreak}" Value="True">
+                    <Setter Property="Background" Value="Yellow"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                    <Setter Property="Background" Value="Gray"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding IsFree}" Value="True">
+                    <Setter Property="Background" Value="White"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Оберіть лікаря для запису:" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+            <Label Content="Пацієнт:" VerticalAlignment="Center"/>
+            <TextBlock x:Name="PatientInfoText" Margin="5,0,20,0" VerticalAlignment="Center"/>
 
-        <DataGrid x:Name="DoctorGrid" Grid.Row="1" AutoGenerateColumns="False"
-                  SelectionMode="Single" IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding DoctorID}" Width="*" />
-                <DataGridTextColumn Header="ПІБ" Binding="{Binding FullName}" Width="2*" />
-                <DataGridTextColumn Header="Спеціальність" Binding="{Binding Specialty}" Width="*" />
-            </DataGrid.Columns>
-        </DataGrid>
+            <Label Content="Дата:" VerticalAlignment="Center"/>
+            <DatePicker x:Name="DatePicker" SelectedDate="{x:Static sys:DateTime.Today}" Width="150"/>
 
-        <TextBlock Grid.Row="2"
-                   Text="Примітка до прийому:"
-                   Margin="0,10,0,2"
-                   FontWeight="Bold"/>
+            <Label Content="Спеціальність:" VerticalAlignment="Center" Margin="20,0,0,0"/>
+            <ComboBox x:Name="SpecialtyComboBox" Width="200" DisplayMemberPath="Name" SelectedValuePath="SpecialtyID"/>
 
-        <TextBox Grid.Row="3"
-                 x:Name="NoteBox"
-                 Height="80"
-                 AcceptsReturn="True"
-                 TextWrapping="Wrap" />
+            <Button Content="Показати графік" Click="LoadSchedule_Click" Margin="20,0,0,0"/>
+        </StackPanel>
 
-        <Button Content="Підтвердити"
-                Grid.Row="4"
-                Height="35"
-                Margin="0,10,0,0"
-                HorizontalAlignment="Right"
-                Width="120"
-                Click="Confirm_Click"/>
+
+        <ScrollViewer Grid.Row="1">
+            <DataGrid x:Name="ScheduleGrid"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          SelectionUnit="Cell"
+          SelectionMode="Single"
+          PreviewMouseLeftButtonDown="ScheduleGrid_PreviewMouseLeftButtonDown"
+
+            SelectedCellsChanged="ScheduleGrid_SelectedCellsChanged"
+                      CanUserAddRows="False"
+                      HeadersVisibility="Column"
+                      CellStyle="{StaticResource ScheduleCellStyle}">
+            </DataGrid>
+        </ScrollViewer>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <TextBlock Text="Примітка:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox x:Name="NoteBox" Width="300" Height="25" Margin="0,0,10,0"/>
+            <Button Content="Підтвердити" Click="Confirm_Click" Width="100"/>
+        </StackPanel>
     </Grid>
 </Window>
