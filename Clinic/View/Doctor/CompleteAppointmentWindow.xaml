@@ -9,7 +9,7 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,15">
                 <Button Content="Пацієнт не з’явився" Click="NoShow_Click" Width="180" Margin="0,0,10,0"/>
-                <Button Content="Прийом завершено" Click="EnableEditing_Click" Width="180" Background="LightGreen"/>
+                <Button Content="Розпочати прийом" Click="EnableEditing_Click" Width="180" Background="LightGreen"/>
             </StackPanel>
 
             <GroupBox Header="Пацієнт" Margin="0,0,0,10">

@@ -6,6 +6,9 @@ namespace Clinic.ViewModels
 {
     public static class AppointmentService
     {
+        public static event EventHandler AppointmentAdded;
+        public static void NotifyAppointmentAdded() => AppointmentAdded?.Invoke(null, EventArgs.Empty);
+
         public static void RegisterAppointment(string patientFullName, int doctorId, DateTime appointmentDate, string role)
         {
             using var conn = Clinic.DB.ClinicDB.GetConnection();
@@ -48,12 +51,13 @@ namespace Clinic.ViewModels
             }
 
             var insertAppointment = new MySqlCommand(
-                "INSERT INTO Appointments (PatientID, DoctorID, AppointmentDate, Status, Notes) " +
-                "VALUES (@pid, @docId, @date, 'Очікується', '')", conn);
+                "INSERT INTO Appointments (PatientID, DoctorID, AppointmentDate, Status, Notes) VALUES (@pid, @docId, @date, 'Очікується', '')", conn);
             insertAppointment.Parameters.AddWithValue("@pid", patientId);
             insertAppointment.Parameters.AddWithValue("@docId", doctorId);
             insertAppointment.Parameters.AddWithValue("@date", appointmentDate);
             insertAppointment.ExecuteNonQuery();
+
+            NotifyAppointmentAdded();
 
             MessageBox.Show("Пацієнта успішно записано на прийом.", "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
         }

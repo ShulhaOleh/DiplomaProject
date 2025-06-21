@@ -33,13 +33,61 @@ namespace Clinic.View.Receptionist
         public SelectDoctorWindow(Patient patient, RegisterPatientViewModel viewModel)
         {
             InitializeComponent();
-            _patient = patient;
+
             _viewModel = viewModel;
-            LoadSpecialties();
+            _patient = patient;
+
+            DataContext = _viewModel;
+
             PatientInfoText.Text = _patient != null
                 ? $"{_patient.FullName}"
                 : "Пацієнта не передано";
+
+            if (_viewModel.IsDoctor)
+            {
+                LoadDoctorsForCurrentDoctor();
+                _selectedDate = DateTime.Today;
+                BuildScheduleTable();
+            }
+            else
+            {
+                LoadSpecialties();
+            }
         }
+
+        private void LoadDoctorsForCurrentDoctor()
+        {
+            _doctors = new List<Clinic.Models.Doctor>();
+
+            using var conn = ClinicDB.GetConnection();
+            conn.Open();
+
+            var cmd = new MySqlCommand(
+                @"SELECT DoctorID, FirstName, LastName, FathersName,
+                 DateOfBirth, PhoneNumber, BreakHour, SpecialtyID
+          FROM Doctors
+          WHERE DoctorID = @id", conn);
+            cmd.Parameters.AddWithValue("@id", _viewModel.UserID);
+
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                var doctor = new Clinic.Models.Doctor
+                {
+                    DoctorID = reader.GetInt32("DoctorID"),
+                    FirstName = reader.GetString("FirstName"),
+                    LastName = reader.GetString("LastName"),
+                    FathersName = reader["FathersName"]?.ToString(),
+                    DateOfBirth = reader.GetDateTime("DateOfBirth"),
+                    PhoneNumber = reader["PhoneNumber"]?.ToString(),
+                    BreakHour = reader.GetTimeSpan("BreakHour"),
+                    SpecialtyID = reader.GetInt32("SpecialtyID")
+                };
+
+                _doctors.Add(doctor);
+            }
+        }
+
 
         private void LoadSpecialties()
         {
@@ -62,18 +110,6 @@ namespace Clinic.View.Receptionist
             SpecialtyComboBox.ItemsSource = specialties;
         }
 
-        private void LoadSchedule_Click(object sender, RoutedEventArgs e)
-        {
-            if (DatePicker.SelectedDate == null || SpecialtyComboBox.SelectedValue == null)
-                return;
-
-            _selectedDate = DatePicker.SelectedDate.Value;
-            int specialtyID = (int)SpecialtyComboBox.SelectedValue;
-
-            LoadDoctors(specialtyID);
-            BuildScheduleTable();
-        }
-
         private void LoadDoctors(int specialtyID)
         {
             _doctors = new List<Clinic.Models.Doctor>();
@@ -91,7 +127,7 @@ namespace Clinic.View.Receptionist
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                _doctors.Add(new Clinic.Models.Doctor
+                var doctor = new Clinic.Models.Doctor
                 {
                     DoctorID = reader.GetInt32("DoctorID"),
                     FirstName = reader.GetString("FirstName"),
@@ -101,7 +137,12 @@ namespace Clinic.View.Receptionist
                     PhoneNumber = reader["PhoneNumber"]?.ToString(),
                     BreakHour = reader.GetTimeSpan("BreakHour"),
                     SpecialtyID = reader.GetInt32("SpecialtyID")
-                });
+                };
+
+                if (_viewModel.Role == "Doctor" && doctor.DoctorID != _viewModel.UserID)
+                    continue;
+
+                _doctors.Add(doctor);
             }
         }
 
@@ -233,8 +274,6 @@ namespace Clinic.View.Receptionist
             Close();
         }
 
-
-
         private void ScheduleGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             if (ScheduleGrid.SelectedItem is not ScheduleRow row || ScheduleGrid.CurrentColumn == null)
@@ -324,10 +363,5 @@ namespace Clinic.View.Receptionist
             LoadDoctors(specialtyID);
             BuildScheduleTable();
         }
-
-
-
     }
-
-
 }

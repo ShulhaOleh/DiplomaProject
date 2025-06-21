@@ -3,6 +3,12 @@ DROP DATABASE IF EXISTS Clinic;
 CREATE DATABASE IF NOT EXISTS Clinic;
 USE Clinic;
 
+-- Table of doctor's Specialty
+CREATE TABLE Specialties (
+    SpecialtyID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL UNIQUE
+);
+
 -- Table of doctors
 CREATE TABLE Doctors (
     DoctorID INT AUTO_INCREMENT PRIMARY KEY,
@@ -10,10 +16,12 @@ CREATE TABLE Doctors (
     FirstName VARCHAR(50) NOT NULL,
     FathersName VARCHAR(50),
     DateOfBirth DATE NOT NULL,
-    Specialty ENUM('ЛОР', 'Геніколог', 'Хірург') NOT NULL,
     PhoneNumber VARCHAR(20),
-    BreakHour TIME NOT NULL DEFAULT '13:00:00'
+    BreakHour TIME NOT NULL DEFAULT '13:00:00',
+    SpecialtyID INT NOT NULL,
+	FOREIGN KEY (SpecialtyID) REFERENCES Specialties(SpecialtyID)
 );
+
 
 -- Table of patients
 CREATE TABLE Patients (

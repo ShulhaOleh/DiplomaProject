@@ -47,6 +47,14 @@ namespace Clinic
             }
         }
 
+        public static int? CurrentDoctorId { get; set; }
+
+        public static class CurrentSession
+        {
+            public static int? DoctorId { get; set; }
+        }
+
+
 
     }
 }

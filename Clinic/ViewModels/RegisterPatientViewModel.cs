@@ -1,5 +1,6 @@
 ﻿using Clinic.DB;
 using Clinic.Models;
+using Clinic.ViewModels.Doctor;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.ObjectModel;
@@ -13,7 +14,11 @@ namespace Clinic.ViewModels
         private readonly int _userId;
         private readonly string _role;
 
-        public string Role => _role;
+        public string Role { get; set; }
+        public int UserID { get; set; }
+        public bool IsDoctor => Role == "Doctor";
+
+        private readonly DoctorAppointmentsViewModel _parentViewModel;
 
         public ObservableCollection<Patient> FilteredPatients { get; } = new();
         private string _searchQuery;
@@ -47,6 +52,9 @@ namespace Clinic.ViewModels
         {
             _userId = id;
             _role = role;
+
+            UserID = id;
+            Role = role;
 
             LoadFilteredPatients(string.Empty);
         }
@@ -97,25 +105,7 @@ namespace Clinic.ViewModels
             conn.Open();
 
             int patientId = patient.PatientID;
-
-            int cardId;
-            using (var cmdCard = new MySqlCommand("SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid", conn))
-            {
-                cmdCard.Parameters.AddWithValue("@pid", patientId);
-                var result = cmdCard.ExecuteScalar();
-
-                if (result != null)
-                {
-                    cardId = Convert.ToInt32(result);
-                }
-                else
-                {
-                    var insertCardCmd = new MySqlCommand(
-                        "INSERT INTO AmbulatoryCards (PatientID, CreationDate, CardNumber) VALUES (@pid, NOW(), UUID()); SELECT LAST_INSERT_ID();", conn);
-                    insertCardCmd.Parameters.AddWithValue("@pid", patientId);
-                    cardId = Convert.ToInt32(insertCardCmd.ExecuteScalar());
-                }
-            }
+            int cardId = GetOrCreateCardId(patientId, conn);
 
             var checkCmd = new MySqlCommand(@"
                 SELECT COUNT(*) FROM Appointments 
@@ -145,6 +135,7 @@ namespace Clinic.ViewModels
             cmdInsert.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
 
             cmdInsert.ExecuteNonQuery();
+            AppointmentService.NotifyAppointmentAdded();
         }
 
         public void RegisterAppointment(Patient patient, DateTime selectedDateTime)
@@ -155,25 +146,7 @@ namespace Clinic.ViewModels
             conn.Open();
 
             int patientId = patient.PatientID;
-
-            int cardId;
-            using (var cmdCard = new MySqlCommand("SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid", conn))
-            {
-                cmdCard.Parameters.AddWithValue("@pid", patientId);
-                var result = cmdCard.ExecuteScalar();
-
-                if (result != null)
-                {
-                    cardId = Convert.ToInt32(result);
-                }
-                else
-                {
-                    var insertCardCmd = new MySqlCommand(
-                        "INSERT INTO AmbulatoryCards (PatientID, CreationDate, CardNumber) VALUES (@pid, NOW(), UUID()); SELECT LAST_INSERT_ID();", conn);
-                    insertCardCmd.Parameters.AddWithValue("@pid", patientId);
-                    cardId = Convert.ToInt32(insertCardCmd.ExecuteScalar());
-                }
-            }
+            int cardId = GetOrCreateCardId(patientId, conn);
 
             var checkCmd = new MySqlCommand(@"
                 SELECT COUNT(*) FROM Appointments 
@@ -202,6 +175,25 @@ namespace Clinic.ViewModels
             cmd.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
 
             cmd.ExecuteNonQuery();
+            AppointmentService.NotifyAppointmentAdded();
+        }
+
+        private int GetOrCreateCardId(int patientId, MySqlConnection conn)
+        {
+            using var cmdCard = new MySqlCommand("SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid", conn);
+            cmdCard.Parameters.AddWithValue("@pid", patientId);
+            var result = cmdCard.ExecuteScalar();
+
+            if (result != null)
+            {
+                return Convert.ToInt32(result);
+            }
+
+            var insertCardCmd = new MySqlCommand(@"
+                INSERT INTO AmbulatoryCards (PatientID, CreationDate, CardNumber) 
+                VALUES (@pid, NOW(), UUID()); SELECT LAST_INSERT_ID();", conn);
+            insertCardCmd.Parameters.AddWithValue("@pid", patientId);
+            return Convert.ToInt32(insertCardCmd.ExecuteScalar());
         }
     }
 }

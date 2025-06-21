@@ -42,7 +42,9 @@ namespace Clinic.ViewModels
 
             if (Role == "Doctor")
             {
-                MenuItems.Add(new MenuItem("Прийоми", new DoctorAppointmentsViewModel(LinkedId)));
+                var docVM = new DoctorAppointmentsViewModel(LinkedId);
+
+                MenuItems.Add(new MenuItem("Прийоми", docVM));
                 MenuItems.Add(new MenuItem("Запис на прийом", new RegisterPatientViewModel(LinkedId, "Doctor")));
                 MenuItems.Add(new MenuItem("Профіль", new ProfileViewModel(LinkedId, "Doctor")));
             }
