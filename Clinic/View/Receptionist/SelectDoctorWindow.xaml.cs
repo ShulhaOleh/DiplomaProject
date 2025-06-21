@@ -273,7 +273,7 @@ namespace Clinic.View.Receptionist
                 return;
 
             if (cell.Column.DisplayIndex == 0)
-                return; // перша колонка – час
+                return;
 
             if (cell.DataContext is not ScheduleRow row)
                 return;
@@ -298,6 +298,31 @@ namespace Clinic.View.Receptionist
             SelectedTime = TimeSpan.Parse(row.TimeSlot);
 
             MessageBox.Show($"Обрано лікаря: {doctor.FullName}, час: {SelectedTime:hh\\:mm}");
+        }
+
+        private void SpecialtyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TryBuildSchedule();
+        }
+
+        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TryBuildSchedule();
+        }
+
+        private void TryBuildSchedule()
+        {
+            if (SpecialtyComboBox == null || DatePicker == null)
+                return;
+
+            if (DatePicker.SelectedDate == null || SpecialtyComboBox.SelectedValue == null)
+                return;
+
+            _selectedDate = DatePicker.SelectedDate.Value;
+            int specialtyID = (int)SpecialtyComboBox.SelectedValue;
+
+            LoadDoctors(specialtyID);
+            BuildScheduleTable();
         }
 
 

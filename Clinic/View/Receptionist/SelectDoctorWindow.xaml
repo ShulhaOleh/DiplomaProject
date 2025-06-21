@@ -25,7 +25,6 @@
         </Style>
     </Window.Resources>
 
-
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -38,12 +37,19 @@
             <TextBlock x:Name="PatientInfoText" Margin="5,0,20,0" VerticalAlignment="Center"/>
 
             <Label Content="Дата:" VerticalAlignment="Center"/>
-            <DatePicker x:Name="DatePicker" SelectedDate="{x:Static sys:DateTime.Today}" Width="150"/>
+            <DatePicker x:Name="DatePicker"
+            SelectedDateChanged="DatePicker_SelectedDateChanged"
+            SelectedDate="{x:Static sys:DateTime.Today}"
+            Width="150"/>
+
 
             <Label Content="Спеціальність:" VerticalAlignment="Center" Margin="20,0,0,0"/>
-            <ComboBox x:Name="SpecialtyComboBox" Width="200" DisplayMemberPath="Name" SelectedValuePath="SpecialtyID"/>
+            <ComboBox x:Name="SpecialtyComboBox"
+          DisplayMemberPath="Name"
+          SelectedValuePath="SpecialtyID"
+          SelectionChanged="SpecialtyComboBox_SelectionChanged"
+          Width="200"/>
 
-            <Button Content="Показати графік" Click="LoadSchedule_Click" Margin="20,0,0,0"/>
         </StackPanel>
 
 
