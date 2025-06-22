@@ -1,20 +1,4 @@
 <Application x:Class="Clinic.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:Clinic.ViewModels"
-             xmlns:vmDoctor="clr-namespace:Clinic.ViewModels.Doctor"
-             xmlns:vmAdmin="clr-namespace:Clinic.ViewModels.Admin"
-             xmlns:vmReceptionist="clr-namespace:Clinic.ViewModels.Receptionist"
-             xmlns:view="clr-namespace:Clinic.View"
-             xmlns:viewDoctor="clr-namespace:Clinic.View.Doctor"
-             xmlns:viewAdmin="clr-namespace:Clinic.View.Admin"
-             xmlns:viewReceptionist="clr-namespace:Clinic.View.Receptionist">
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Languages/Resources.uk.xaml" />
-                <ResourceDictionary Source="Languages/Resources.en.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 </Application>

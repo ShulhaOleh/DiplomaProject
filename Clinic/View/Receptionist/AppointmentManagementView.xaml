@@ -4,24 +4,42 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
-
     <Grid Margin="10">
         <StackPanel>
-            <TextBlock Text="Прийоми на сьогодні" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+            <!-- Заголовок -->
+            <TextBlock 
+                Text="{DynamicResource AppointmentManagement_Header}"
+                FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
 
-            <DataGrid ItemsSource="{Binding TodayAppointments}" AutoGenerateColumns="False" Margin="0,0,0,10"
-                      CanUserAddRows="False" IsReadOnly="True" SelectedItem="{Binding SelectedAppointment}" RenderTransformOrigin="0.588,0.554">
+            <!-- Таблиця прийомів -->
+            <DataGrid 
+                ItemsSource="{Binding TodayAppointments}"
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                IsReadOnly="True"
+                SelectedItem="{Binding SelectedAppointment}"
+                Margin="0,0,0,10"
+                HeadersVisibility="Column">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Пацієнт" Binding="{Binding PatientName}" Width="*" />
-                    <DataGridTextColumn Header="Дата" Binding="{Binding AppointmentDate}" Width="*" />
-                    <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="*" />
+                    <DataGridTextColumn 
+                        Header="{DynamicResource Column_Patient}"
+                        Binding="{Binding PatientName}" Width="*" />
+                    <DataGridTextColumn 
+                        Header="{DynamicResource Column_Date}"
+                        Binding="{Binding AppointmentDate, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                        Width="*" />
+                    <DataGridTextColumn 
+                        Header="{DynamicResource Column_Status}"
+                        Binding="{Binding Status}" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Button Content="Позначити як 'не з’явився'"
-                    Command="{Binding MarkNoShowCommand}"
-                    CommandParameter="{Binding SelectedAppointment}"
-                    Height="40" Width="300" HorizontalAlignment="Left" />
+            <!-- Кнопка маркування неявки -->
+            <Button
+                Content="{DynamicResource Btn_MarkNoShow}"
+                Command="{Binding MarkNoShowCommand}"
+                CommandParameter="{Binding SelectedAppointment}"
+                Height="40" Width="300" HorizontalAlignment="Left"/>
         </StackPanel>
     </Grid>
 </UserControl>

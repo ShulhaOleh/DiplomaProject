@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using Clinic.Properties;
 
 namespace Clinic
 {
@@ -9,52 +10,41 @@ namespace Clinic
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            try
+            base.OnStartup(e);
+
+            var lang = Settings.Default.AppLanguage;
+            if (string.IsNullOrEmpty(lang))
             {
-                base.OnStartup(e);
-
-                string savedLang = Clinic.Properties.Settings.Default.AppLanguage;
-                if (string.IsNullOrEmpty(savedLang))
-                {
-                    string systemLang = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
-                    savedLang = systemLang == "uk" ? "uk" : "en";
-                    Clinic.Properties.Settings.Default.AppLanguage = savedLang;
-                    Clinic.Properties.Settings.Default.Save();
-                }
-
-                Thread.CurrentThread.CurrentUICulture = new CultureInfo(savedLang);
-                Thread.CurrentThread.CurrentCulture = new CultureInfo(savedLang);
-
-                new View.Login().Show();
+                var sys = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+                lang = sys == "uk" ? "uk" : "en";
+                Settings.Default.AppLanguage = lang;
+                Settings.Default.Save();
             }
-            catch (Exception ex)
+            var ci = new CultureInfo(lang);
+            Thread.CurrentThread.CurrentCulture = ci;
+            Thread.CurrentThread.CurrentUICulture = ci;
+
+            var dict = new ResourceDictionary
             {
-                MessageBox.Show("FATAL ERROR: " + ex.Message);
-                Environment.Exit(1);
-            }
+                Source = new Uri($"Languages/Resources.{lang}.xaml", UriKind.Relative)
+            };
+            Resources.MergedDictionaries.Add(dict);
+
+            new View.Login().Show();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-
-            if (!Clinic.Properties.Settings.Default.RememberMe)
+            if (!Settings.Default.RememberMe)
             {
-                Clinic.Properties.Settings.Default.SavedUsername = string.Empty;
-                Clinic.Properties.Settings.Default.SavedPassword = string.Empty;
-                Clinic.Properties.Settings.Default.RememberMe = false;
-                Clinic.Properties.Settings.Default.Save();
+                Settings.Default.SavedUsername = "";
+                Settings.Default.SavedPassword = "";
+                Settings.Default.RememberMe = false;
+                Settings.Default.Save();
             }
         }
 
         public static int? CurrentDoctorId { get; set; }
-
-        public static class CurrentSession
-        {
-            public static int? DoctorId { get; set; }
-        }
-
-
-
     }
 }

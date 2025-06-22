@@ -39,13 +39,13 @@ Clinic/
 │   │   └── DoctorAppointmentsView.xaml.cs
 │   ├── Receptionist
 │   │   ├── AppointmentManagementView.xaml
-│   │   ├── AppointmentManagementView.xaml.cs
-│   │   ├── SelectDoctorWindow.xaml
-│   │   └── SelectDoctorWindow.xaml.cs
+│   │   └── AppointmentManagementView.xaml.cs
 │   ├── Login.xaml
 │   ├── Login.xaml.cs
 │   ├── MainWindow.xaml
 │   ├── MainWindow.xaml.cs
+│   ├── MakeAppointmentWindow.xaml
+│   ├── MakeAppointmentWindow.xaml.cs
 │   ├── ProfileView.xaml
 │   ├── ProfileView.xaml.cs
 │   ├── RegisterPatientWindow.xaml

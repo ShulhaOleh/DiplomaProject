@@ -1,16 +1,20 @@
-﻿using Clinic.Models;
-using Clinic.DB;
-using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using Clinic.DB;
+using Clinic.Models;
+using MySql.Data.MySqlClient;
 
 namespace Clinic.ViewModels.Receptionist
 {
     public class AppointmentManagementViewModel : BaseViewModel
     {
-        public ObservableCollection<Appointment> TodayAppointments { get; set; } = new();
+        public ObservableCollection<Appointment> TodayAppointments { get; }
+            = new ObservableCollection<Appointment>();
+
+        public Appointment SelectedAppointment { get; set; }
+
         public ICommand MarkNoShowCommand { get; }
         public ICommand ReloadAppointmentsCommand { get; }
 
@@ -34,21 +38,17 @@ namespace Clinic.ViewModels.Receptionist
             using var conn = ClinicDB.GetConnection();
             conn.Open();
 
-            string query = @"
+            var cmd = new MySqlCommand(@"
                 SELECT 
                     a.AppointmentID,
                     a.PatientID,
                     CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
                     a.AppointmentDate,
-                    a.Status,
-                    a.Notes,
-                    a.AmbulatoryCardID
+                    a.Status
                 FROM Appointments a
                 JOIN Patients p ON p.PatientID = a.PatientID
                 WHERE DATE(a.AppointmentDate) = @today
-                ORDER BY a.AppointmentDate ASC";
-
-            using var cmd = new MySqlCommand(query, conn);
+                ORDER BY a.AppointmentDate ASC", conn);
             cmd.Parameters.AddWithValue("@today", today);
 
             using var reader = cmd.ExecuteReader();
@@ -60,30 +60,45 @@ namespace Clinic.ViewModels.Receptionist
                     PatientID = reader.GetInt32("PatientID"),
                     PatientName = reader.GetString("PatientName"),
                     AppointmentDate = reader.GetDateTime("AppointmentDate"),
-                    Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? "Очікується" : reader.GetString("Status"),
-                    Notes = reader.IsDBNull(reader.GetOrdinal("Notes")) ? "" : reader.GetString("Notes"),
-                    CardId = reader.GetInt32("AmbulatoryCardID")
+                    Status = reader.IsDBNull(reader.GetOrdinal("Status"))
+                             ? (string)Application.Current.FindResource("Status_Expected")
+                             : reader.GetString("Status")
                 });
             }
         }
 
-        private void MarkAsNoShow(Appointment appointment)
+        private void MarkAsNoShow(Appointment appt)
         {
-            if (appointment == null || appointment.Status == "Прийом завершено" || appointment.Status == "Пацієнт не з’явився")
+            if (appt == null) return;
+
+            var completed = (string)Application.Current.FindResource("Status_Completed");
+            var noShow = (string)Application.Current.FindResource("Status_NoShow");
+
+            if (appt.Status == completed || appt.Status == noShow)
             {
-                MessageBox.Show("Цей прийом уже завершено або позначено як 'не з’явився'.");
+                MessageBox.Show(
+                    (string)Application.Current.FindResource("Msg_AlreadyHandled"),
+                    (string)Application.Current.FindResource("Title_Done"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
                 return;
             }
 
             using var conn = ClinicDB.GetConnection();
             conn.Open();
 
-            string update = "UPDATE Appointments SET Status = 'Пацієнт не з’явився' WHERE AppointmentID = @id";
-            using var cmd = new MySqlCommand(update, conn);
-            cmd.Parameters.AddWithValue("@id", appointment.AppointmentID);
+            var cmd = new MySqlCommand(
+                "UPDATE Appointments SET Status = @status WHERE AppointmentID = @id", conn);
+            cmd.Parameters.AddWithValue("@status", noShow);
+            cmd.Parameters.AddWithValue("@id", appt.AppointmentID);
             cmd.ExecuteNonQuery();
 
-            MessageBox.Show($"Прийом пацієнта '{appointment.PatientName}' позначено як 'не з’явився'.", "Готово");
+            MessageBox.Show(
+                (string)Application.Current.FindResource("Msg_NoShowSuccess"),
+                (string)Application.Current.FindResource("Title_Done"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
             LoadTodayAppointments();
         }
     }

@@ -89,7 +89,7 @@ CREATE TABLE Appointments (
     AppointmentID INT AUTO_INCREMENT PRIMARY KEY,
     PatientID INT NOT NULL,
     DoctorID INT NOT NULL,
-    ReceptionistID INT, -- нове поле
+    ReceptionistID INT,
     AmbulatoryCardID INT NOT NULL,
     AppointmentDate DATETIME NOT NULL,
     Status ENUM('Прийом завершено', 'Пацієнт не з’явився', 'Очікується') DEFAULT 'Очікується',
