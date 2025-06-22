@@ -36,17 +36,19 @@ namespace Clinic.View.Receptionist
 
             _viewModel = viewModel;
             _patient = patient;
-
             DataContext = _viewModel;
 
-            PatientInfoText.Text = _patient != null
-                ? $"{_patient.FullName}"
-                : "Пацієнта не передано";
+            PatientInfoText.Text = _patient?.FullName ?? "Пацієнта не передано";
+
+            DatePicker.SelectedDate = DateTime.Today;
+            _selectedDate = DatePicker.SelectedDate.Value;
+
+            DatePicker.SelectedDateChanged += DatePicker_SelectedDateChanged;
+            SpecialtyComboBox.SelectionChanged += SpecialtyComboBox_SelectionChanged;
 
             if (_viewModel.IsDoctor)
             {
                 LoadDoctorsForCurrentDoctor();
-                _selectedDate = DateTime.Today;
                 BuildScheduleTable();
             }
             else
@@ -54,6 +56,7 @@ namespace Clinic.View.Receptionist
                 LoadSpecialties();
             }
         }
+
 
         private void LoadDoctorsForCurrentDoctor()
         {
@@ -339,29 +342,39 @@ namespace Clinic.View.Receptionist
             MessageBox.Show($"Обрано лікаря: {doctor.FullName}, час: {SelectedTime:hh\\:mm}");
         }
 
+        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DatePicker.SelectedDate.HasValue)
+                _selectedDate = DatePicker.SelectedDate.Value;
+
+            TryBuildSchedule();
+        }
+
+
         private void SpecialtyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             TryBuildSchedule();
         }
 
-        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            TryBuildSchedule();
-        }
 
         private void TryBuildSchedule()
         {
-            if (SpecialtyComboBox == null || DatePicker == null)
-                return;
+            if (DatePicker.SelectedDate.HasValue)
+                _selectedDate = DatePicker.SelectedDate.Value.Date;
 
-            if (DatePicker.SelectedDate == null || SpecialtyComboBox.SelectedValue == null)
-                return;
-
-            _selectedDate = DatePicker.SelectedDate.Value;
-            int specialtyID = (int)SpecialtyComboBox.SelectedValue;
-
-            LoadDoctors(specialtyID);
-            BuildScheduleTable();
+            if (_viewModel.IsDoctor)
+            {
+                BuildScheduleTable();
+            }
+            else
+            {
+                if (SpecialtyComboBox.SelectedValue is int specialtyID)
+                {
+                    LoadDoctors(specialtyID);
+                    BuildScheduleTable();
+                }
+            }
         }
+
     }
 }
