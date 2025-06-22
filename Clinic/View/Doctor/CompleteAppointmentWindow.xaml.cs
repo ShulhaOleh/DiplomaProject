@@ -25,6 +25,7 @@ namespace Clinic.View.Doctor
             DisableEditing();
         }
 
+
         private void LoadPatientInfo()
         {
             using var conn = Clinic.DB.ClinicDB.GetConnection();
@@ -149,16 +150,29 @@ namespace Clinic.View.Doctor
         private void Complete_Click(object sender, RoutedEventArgs e)
         {
             _appointment.Notes = NotesBox.Text;
+
+            if (!NotesBox.IsEnabled)
+                _appointment.Status = "Пацієнт не з’явився";
+            else
+                _appointment.Status = "Прийом завершено";
+
             SaveBloodType();
+
             DialogResult = true;
             Close();
         }
 
+
         private void NoShow_Click(object sender, RoutedEventArgs e)
         {
-            DisableEditing();
+            _appointment.Notes = NotesBox.Text;
+
             _appointment.Status = "Пацієнт не з’явився";
+
+            DialogResult = true;
+            Close();
         }
+
 
         private void EnableEditing_Click(object sender, RoutedEventArgs e)
         {

@@ -3,7 +3,8 @@ Clinic/
 │   └── catalog.png
 ├── Converters
 │   ├── DateOnlyConverter.cs
-│   └── InverseBoolConverter.cs
+│   ├── InverseBoolConverter.cs
+│   └── InverseBooleanToVisibilityConverter.cs
 ├── DB
 │   ├── AuthDB.cs
 │   ├── ClinicDB.cs
@@ -17,6 +18,8 @@ Clinic/
 │   ├── Doctor.cs
 │   ├── Patient.cs
 │   ├── Receptionist.cs
+│   ├── ScheduleCell.cs
+│   ├── ScheduleRow.cs
 │   └── User.cs
 ├── Properties
 │   ├── Settings.Designer.cs
@@ -46,9 +49,7 @@ Clinic/
 │   ├── ProfileView.xaml
 │   ├── ProfileView.xaml.cs
 │   ├── RegisterPatientWindow.xaml
-│   ├── RegisterPatientWindow.xaml.cs
-│   ├── SelectAppointmentTimeWindow.xaml
-│   └── SelectAppointmentTimeWindow.xaml.cs
+│   └── RegisterPatientWindow.xaml.cs
 ├── ViewModels
 │   ├── Admin
 │   │   └── AdminUserManagementViewModel.cs
@@ -71,6 +72,5 @@ Clinic/
 ├── App.xaml.cs
 ├── App.xaml.Designer.cs
 ├── AssemblyInfo.cs
-├── ClassDiagram.cd
 ├── Clinic.csproj
 └── Clinic.csproj.user

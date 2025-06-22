@@ -18,29 +18,19 @@ namespace Clinic.View.Doctor
             InitializeComponent();
 
             Loaded += DoctorAppointmentsView_Loaded;
-
-            AppointmentService.AppointmentAdded -= OnAppointmentAddedHandler;
-            AppointmentService.AppointmentAdded += OnAppointmentAddedHandler;
         }
 
         private void DoctorAppointmentsView_Loaded(object sender, RoutedEventArgs e)
         {
             if (App.CurrentDoctorId is int doctorId)
             {
-                var vm = new DoctorAppointmentsViewModel(doctorId);
-                this.DataContext = vm;
+                _viewModel = new DoctorAppointmentsViewModel(doctorId);
+                this.DataContext = _viewModel;
 
                 AppointmentService.AppointmentAdded -= OnAppointmentAddedHandler;
                 AppointmentService.AppointmentAdded += OnAppointmentAddedHandler;
-
-                void OnAppointmentAddedHandler(object s, EventArgs args)
-                {
-                    Application.Current.Dispatcher.Invoke(() => vm.LoadAppointmentsFromDatabase());
-                }
             }
         }
-
-
 
         private void OnAppointmentAddedHandler(object sender, EventArgs e)
         {
@@ -55,7 +45,7 @@ namespace Clinic.View.Doctor
             if (sender is not DataGrid dg || dg.SelectedItem is not Appointment selected)
                 return;
 
-            if (selected.Status == "Прийом завершено")
+            if (selected.Status == "Прийом завершено" || selected.Status == "Пацієнт не з’явився")
                 return;
 
             var dialog = new CompleteAppointmentWindow(selected);
@@ -64,11 +54,21 @@ namespace Clinic.View.Doctor
             if (result == true && _viewModel != null)
             {
                 _viewModel.CompleteAppointment(selected);
-                _viewModel.LoadAppointmentsFromDatabase();
 
-                MessageBox.Show("Прийом успішно завершено!", "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
+                string msg = selected.Status switch
+                {
+                    "Прийом завершено" => "Прийом успішно завершено!",
+                    "Пацієнт не з’явився" => "Пацієнта позначено як «не з’явився».",
+                    _ => "Статус оновлено."
+                };
+
+                MessageBox.Show(msg, "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+
+            _viewModel?.LoadAppointmentsFromDatabase();
         }
+
+
     }
 
 }

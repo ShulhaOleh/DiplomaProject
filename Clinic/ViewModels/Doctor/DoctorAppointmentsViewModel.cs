@@ -27,7 +27,6 @@ namespace Clinic.ViewModels.Doctor
 
             LoadAppointmentsFromDatabase();
 
-            // ✅ Підписка на подію — тут, а не у View
             AppointmentService.AppointmentAdded += OnAppointmentAdded;
         }
 
@@ -107,12 +106,14 @@ namespace Clinic.ViewModels.Doctor
             string query = "UPDATE Appointments SET Status = @status, Notes = @notes WHERE AppointmentID = @id";
 
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@status", "Прийом завершено");
+            cmd.Parameters.AddWithValue("@status", appointment.Status);
             cmd.Parameters.AddWithValue("@notes", appointment.Notes);
             cmd.Parameters.AddWithValue("@id", appointment.AppointmentID);
             cmd.ExecuteNonQuery();
 
             LoadAppointmentsFromDatabase();
         }
+
+
     }
 }

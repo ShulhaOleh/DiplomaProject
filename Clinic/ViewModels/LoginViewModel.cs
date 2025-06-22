@@ -102,12 +102,9 @@ namespace Clinic.ViewModels
             if (reader.Read())
             {
                 string role = reader.GetString("Role");
-                int? linkedId = null;
-
-                if (!reader.IsDBNull(reader.GetOrdinal("LinkedID")))
-                    linkedId = reader.GetInt32(reader.GetOrdinal("LinkedID"));
-
-
+                int? linkedId = reader.IsDBNull(reader.GetOrdinal("LinkedID"))
+                                ? null
+                                : reader.GetInt32(reader.GetOrdinal("LinkedID"));
 
                 SaveCredentials();
 
@@ -116,8 +113,12 @@ namespace Clinic.ViewModels
                     string fullName = GetFullNameByRole(role, linkedId);
                     if (fullName != null)
                     {
-                        var mainWindow = new View.MainWindow(fullName, role, linkedId, Username);
+                        if (role == "Doctor" && linkedId.HasValue)
+                            App.CurrentDoctorId = linkedId.Value;
+                        else
+                            App.CurrentDoctorId = null;
 
+                        var mainWindow = new View.MainWindow(fullName, role, linkedId, Username);
                         mainWindow.Show();
                         CloseLoginWindow();
                     }
@@ -128,6 +129,7 @@ namespace Clinic.ViewModels
             else
                 Message = App.Current.TryFindResource("IncorrectPasswordOrLoginMessage").ToString();
         }
+
 
         public static string GetFullNameByRole(string role, int? linkedId)
         {

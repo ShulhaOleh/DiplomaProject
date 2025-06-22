@@ -31,6 +31,9 @@
                 <DataTrigger Binding="{Binding Status}" Value="Прийом завершено">
                     <Setter Property="Background" Value="LightGray" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Пацієнт не з’явився">
+                    <Setter Property="Background" Value="LightGray" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding IsNearestToday}" Value="true">
                     <Setter Property="Background" Value="#FFF999" />
                 </DataTrigger>
