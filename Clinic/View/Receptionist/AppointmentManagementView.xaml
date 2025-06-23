@@ -4,42 +4,61 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
+
     <Grid Margin="10">
         <StackPanel>
-            <!-- Заголовок -->
             <TextBlock 
-                Text="{DynamicResource AppointmentManagement_Header}"
-                FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+          Text="{DynamicResource AppointmentManagement_Header}"
+          FontSize="16" FontWeight="Bold"
+          Margin="0,0,0,10"/>
 
-            <!-- Таблиця прийомів -->
             <DataGrid 
-                ItemsSource="{Binding TodayAppointments}"
-                AutoGenerateColumns="False"
-                CanUserAddRows="False"
-                IsReadOnly="True"
-                SelectedItem="{Binding SelectedAppointment}"
-                Margin="0,0,0,10"
-                HeadersVisibility="Column">
+              ItemsSource="{Binding TodayAppointments}"
+              AutoGenerateColumns="False"
+              CanUserAddRows="False"
+              IsReadOnly="True"
+              SelectedItem="{Binding SelectedAppointment}"
+              Margin="0,0,0,10"
+              HeadersVisibility="Column">   
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Status}"
+                           Value="{StaticResource Status_NoShow}">
+                                <Setter Property="Background" Value="LightGray"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}"
+                           Value="{StaticResource Status_Completed}">
+                                <Setter Property="Background" Value="LightGray"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+
                 <DataGrid.Columns>
                     <DataGridTextColumn 
-                        Header="{DynamicResource Column_Patient}"
-                        Binding="{Binding PatientName}" Width="*" />
+                              Header="{DynamicResource Column_Patient}"
+                              Binding="{Binding PatientName}"
+                              Width="*" />
                     <DataGridTextColumn 
-                        Header="{DynamicResource Column_Date}"
-                        Binding="{Binding AppointmentDate, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
-                        Width="*" />
+                              Header="{DynamicResource Column_Date}"
+                              Binding="{Binding AppointmentDate, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                              Width="*" />
                     <DataGridTextColumn 
-                        Header="{DynamicResource Column_Status}"
-                        Binding="{Binding Status}" Width="*" />
+                              Header="{DynamicResource Column_Status}"
+                              Binding="{Binding Status}"
+                              Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <!-- Кнопка маркування неявки -->
             <Button
-                Content="{DynamicResource Btn_MarkNoShow}"
-                Command="{Binding MarkNoShowCommand}"
-                CommandParameter="{Binding SelectedAppointment}"
-                Height="40" Width="300" HorizontalAlignment="Left"/>
+                  Content="{DynamicResource Btn_MarkNoShow}"
+                  Command="{Binding MarkNoShowCommand}"
+                  CommandParameter="{Binding SelectedAppointment}"
+                  Height="40"
+                  Width="300"
+                  HorizontalAlignment="Left"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -13,7 +13,21 @@ namespace Clinic.ViewModels.Receptionist
         public ObservableCollection<Appointment> TodayAppointments { get; }
             = new ObservableCollection<Appointment>();
 
-        public Appointment SelectedAppointment { get; set; }
+        private Appointment _selectedAppointment;
+        public Appointment SelectedAppointment
+        {
+            get => _selectedAppointment;
+            set
+            {
+                if (_selectedAppointment != value)
+                {
+                    _selectedAppointment = value;
+                    OnPropertyChanged(nameof(SelectedAppointment));
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
+
 
         public ICommand MarkNoShowCommand { get; }
         public ICommand ReloadAppointmentsCommand { get; }
