@@ -13,6 +13,7 @@ namespace Clinic.Models
         public string LastName { get; set; }
         public string FathersName { get; set; }
         public string FullName => $"{LastName} {FirstName} {FathersName}";
+        public string Phone { get; set; }
     }
 }
 

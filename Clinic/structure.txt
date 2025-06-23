@@ -1,6 +1,7 @@
 Clinic/
 ├── Assets
-│   └── catalog.png
+│   ├── catalog.png
+│   └── hospital.ico
 ├── Converters
 │   ├── DateOnlyConverter.cs
 │   ├── InverseBoolConverter.cs
