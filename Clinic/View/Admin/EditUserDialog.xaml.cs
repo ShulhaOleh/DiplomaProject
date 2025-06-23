@@ -13,8 +13,6 @@ namespace Clinic.View.Admin
     {
         private readonly bool _isEdit;
         private readonly User _user;
-
-        // Віддаємо ці дані назад у VM
         public string Username => UsernameBox.Text.Trim();
         public string Role => (RoleBox.SelectedItem as ComboBoxItem)?.Content.ToString();
         public string Password => PasswordBox.Password;
@@ -23,7 +21,6 @@ namespace Clinic.View.Admin
         public string FathersName => FathersNameBox.Text.Trim();
         public string Phone => PhoneBox.Text.Trim();
 
-        // Ось ця властивість раніше була відсутня → тому компілятор скаржився
         public int? LinkedID { get; private set; }
 
         public EditUserDialog(User user)
@@ -40,14 +37,11 @@ namespace Clinic.View.Admin
                 UsernameBox.Text = user.Username;
                 PasswordLabel.Text = "Новий пароль:";
 
-                // зберігаємо старий LinkedID
                 LinkedID = user.LinkedID;
 
-                // підвантажуємо існуючі дані
                 if (LinkedID.HasValue)
                     LoadProfileData(user.Role, LinkedID.Value);
 
-                // виставляємо роль
                 var item = RoleBox.Items
                                   .Cast<ComboBoxItem>()
                                   .FirstOrDefault(i => i.Content.ToString() == user.Role);
@@ -65,7 +59,6 @@ namespace Clinic.View.Admin
 
         private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Якщо додаємо нового — чистимо поля
             if (!_isEdit)
             {
                 LastNameBox.Clear();
@@ -99,7 +92,6 @@ namespace Clinic.View.Admin
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            // мінімальна валідація
             if (string.IsNullOrWhiteSpace(Username) ||
                 string.IsNullOrWhiteSpace(Role) ||
                 string.IsNullOrWhiteSpace(LastName) ||
@@ -170,7 +162,6 @@ namespace Clinic.View.Admin
             cmd.Parameters.AddWithValue("@father", string.IsNullOrWhiteSpace(FathersName) ? DBNull.Value : FathersName);
             cmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(Phone) ? DBNull.Value : Phone);
 
-            // отримаємо щойно вставлений ключ
             LinkedID = Convert.ToInt32(cmd.ExecuteScalar());
         }
 

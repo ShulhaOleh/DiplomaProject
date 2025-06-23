@@ -6,10 +6,15 @@
     <UseWPF>true</UseWPF>
     <AppDesignerFolder>Langs</AppDesignerFolder>
     <PackageIcon></PackageIcon>
+    <ApplicationIcon>Assets\hospital.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Assets\catalog.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\hospital.ico" />
   </ItemGroup>
 
   <ItemGroup>
