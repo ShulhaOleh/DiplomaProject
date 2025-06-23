@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Clinic.Models;
 using MySql.Data.MySqlClient;
+using Clinic.DB;
 
 namespace Clinic.View.Doctor
 {
@@ -25,10 +26,9 @@ namespace Clinic.View.Doctor
             DisableEditing();
         }
 
-
         private void LoadPatientInfo()
         {
-            using var conn = Clinic.DB.ClinicDB.GetConnection();
+            using var conn = ClinicDB.GetConnection();
             conn.Open();
 
             string query = @"
@@ -46,7 +46,9 @@ namespace Clinic.View.Doctor
             {
                 CardNumberText.Text = reader.GetString("CardNumber");
                 PatientNameText.Text = reader.GetString("FullName");
-                _appointment.BloodType = reader.IsDBNull(reader.GetOrdinal("BloodType")) ? "" : reader.GetString("BloodType");
+                _appointment.BloodType = reader.IsDBNull(reader.GetOrdinal("BloodType"))
+                    ? ""
+                    : reader.GetString("BloodType");
                 _cardId = reader.GetInt32("AmbulatoryCardID");
 
                 Debug.WriteLine("[INFO] Card: " + CardNumberText.Text);
@@ -61,11 +63,14 @@ namespace Clinic.View.Doctor
 
         private void LoadMedicalData()
         {
-            using var conn = Clinic.DB.ClinicDB.GetConnection();
+            using var conn = ClinicDB.GetConnection();
             conn.Open();
 
             Debug.WriteLine($"[INFO] Loading allergies for cardId = {_cardId}");
-            var cmdA = new MySqlCommand("SELECT a.Name FROM Allergies a JOIN CardAllergies ca ON ca.AllergyID = a.AllergyID WHERE ca.AmbulatoryCardID = @cardId", conn);
+            var cmdA = new MySqlCommand(
+                "SELECT a.Name FROM Allergies a " +
+                "JOIN CardAllergies ca ON ca.AllergyID = a.AllergyID " +
+                "WHERE ca.AmbulatoryCardID = @cardId", conn);
             cmdA.Parameters.AddWithValue("@cardId", _cardId);
             using var readerA = cmdA.ExecuteReader();
             bool hasAllergy = false;
@@ -83,7 +88,10 @@ namespace Clinic.View.Doctor
             }
 
             Debug.WriteLine($"[INFO] Loading diseases for cardId = {_cardId}");
-            var cmdD = new MySqlCommand("SELECT d.Name FROM ChronicDiseases d JOIN CardChronicDiseases cd ON cd.DiseaseID = d.DiseaseID WHERE cd.AmbulatoryCardID = @cardId", conn);
+            var cmdD = new MySqlCommand(
+                "SELECT d.Name FROM ChronicDiseases d " +
+                "JOIN CardChronicDiseases cd ON cd.DiseaseID = d.DiseaseID " +
+                "WHERE cd.AmbulatoryCardID = @cardId", conn);
             cmdD.Parameters.AddWithValue("@cardId", _cardId);
             using var readerD = cmdD.ExecuteReader();
             bool hasDisease = false;
@@ -94,6 +102,7 @@ namespace Clinic.View.Doctor
                 Debug.WriteLine("  Disease: " + name);
                 hasDisease = true;
             }
+            readerD.Close();
             if (!hasDisease)
             {
                 DiseaseList.Items.Add("(немає записів)");
@@ -133,19 +142,149 @@ namespace Clinic.View.Doctor
             var selected = (BloodTypeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             if (string.IsNullOrEmpty(selected)) return;
 
-            using var conn = Clinic.DB.ClinicDB.GetConnection();
+            using var conn = ClinicDB.GetConnection();
             conn.Open();
 
-            var cmd = new MySqlCommand("UPDATE AmbulatoryCards SET BloodType = @bt WHERE AmbulatoryCardID = @cardId", conn);
+            var cmd = new MySqlCommand(
+                "UPDATE AmbulatoryCards SET BloodType = @bt WHERE AmbulatoryCardID = @cardId",
+                conn);
             cmd.Parameters.AddWithValue("@bt", selected);
             cmd.Parameters.AddWithValue("@cardId", _cardId);
             cmd.ExecuteNonQuery();
         }
 
-        private void AddAllergy_Click(object sender, RoutedEventArgs e) { }
-        private void RemoveAllergy_Click(object sender, RoutedEventArgs e) { }
-        private void AddDisease_Click(object sender, RoutedEventArgs e) { }
-        private void RemoveDisease_Click(object sender, RoutedEventArgs e) { }
+        private void AddAllergy_Click(object sender, RoutedEventArgs e)
+        {
+            var name = NewAllergyBox.Text?.Trim();
+            if (string.IsNullOrEmpty(name)) return;
+
+            using var conn = ClinicDB.GetConnection();
+            conn.Open();
+
+            var cmdGet = new MySqlCommand(
+                "SELECT AllergyID FROM Allergies WHERE Name = @name",
+                conn);
+            cmdGet.Parameters.AddWithValue("@name", name);
+            var obj = cmdGet.ExecuteScalar();
+            int allergyId;
+            if (obj is null)
+            {
+                var cmdIns = new MySqlCommand(
+                    "INSERT INTO Allergies (Name) VALUES (@name)",
+                    conn);
+                cmdIns.Parameters.AddWithValue("@name", name);
+                cmdIns.ExecuteNonQuery();
+                allergyId = (int)cmdIns.LastInsertedId;
+            }
+            else
+            {
+                allergyId = Convert.ToInt32(obj);
+            }
+
+            // Додаємо зв'язок з картою
+            var cmdLink = new MySqlCommand(
+                "INSERT IGNORE INTO CardAllergies (AmbulatoryCardID, AllergyID) VALUES (@cardId, @allergyId)",
+                conn);
+            cmdLink.Parameters.AddWithValue("@cardId", _cardId);
+            cmdLink.Parameters.AddWithValue("@allergyId", allergyId);
+            cmdLink.ExecuteNonQuery();
+
+            AllergyList.Items.Add(name);
+            NewAllergyBox.Clear();
+        }
+
+        private void RemoveAllergy_Click(object sender, RoutedEventArgs e)
+        {
+            if (AllergyList.SelectedItem is not string name) return;
+
+            using var conn = ClinicDB.GetConnection();
+            conn.Open();
+
+            var cmdGet = new MySqlCommand(
+                "SELECT AllergyID FROM Allergies WHERE Name = @name",
+                conn);
+            cmdGet.Parameters.AddWithValue("@name", name);
+            var obj = cmdGet.ExecuteScalar();
+            if (obj != null)
+            {
+                int allergyId = Convert.ToInt32(obj);
+                var cmdDel = new MySqlCommand(
+                    "DELETE FROM CardAllergies WHERE AmbulatoryCardID = @cardId AND AllergyID = @allergyId",
+                    conn);
+                cmdDel.Parameters.AddWithValue("@cardId", _cardId);
+                cmdDel.Parameters.AddWithValue("@allergyId", allergyId);
+                cmdDel.ExecuteNonQuery();
+            }
+
+            AllergyList.Items.Remove(name);
+        }
+
+        private void AddDisease_Click(object sender, RoutedEventArgs e)
+        {
+            var name = NewDiseaseBox.Text?.Trim();
+            if (string.IsNullOrEmpty(name)) return;
+
+            using var conn = ClinicDB.GetConnection();
+            conn.Open();
+
+            // Перевіряємо довідник ChronicDiseases
+            var cmdGet = new MySqlCommand(
+                "SELECT DiseaseID FROM ChronicDiseases WHERE Name = @name",
+                conn);
+            cmdGet.Parameters.AddWithValue("@name", name);
+            var obj = cmdGet.ExecuteScalar();
+            int diseaseId;
+            if (obj is null)
+            {
+                var cmdIns = new MySqlCommand(
+                    "INSERT INTO ChronicDiseases (Name) VALUES (@name)",
+                    conn);
+                cmdIns.Parameters.AddWithValue("@name", name);
+                cmdIns.ExecuteNonQuery();
+                diseaseId = (int)cmdIns.LastInsertedId;
+            }
+            else
+            {
+                diseaseId = Convert.ToInt32(obj);
+            }
+
+            // Додаємо зв'язок з картою
+            var cmdLink = new MySqlCommand(
+                "INSERT IGNORE INTO CardChronicDiseases (AmbulatoryCardID, DiseaseID) VALUES (@cardId, @diseaseId)",
+                conn);
+            cmdLink.Parameters.AddWithValue("@cardId", _cardId);
+            cmdLink.Parameters.AddWithValue("@diseaseId", diseaseId);
+            cmdLink.ExecuteNonQuery();
+
+            DiseaseList.Items.Add(name);
+            NewDiseaseBox.Clear();
+        }
+
+        private void RemoveDisease_Click(object sender, RoutedEventArgs e)
+        {
+            if (DiseaseList.SelectedItem is not string name) return;
+
+            using var conn = ClinicDB.GetConnection();
+            conn.Open();
+
+            var cmdGet = new MySqlCommand(
+                "SELECT DiseaseID FROM ChronicDiseases WHERE Name = @name",
+                conn);
+            cmdGet.Parameters.AddWithValue("@name", name);
+            var obj = cmdGet.ExecuteScalar();
+            if (obj != null)
+            {
+                int diseaseId = Convert.ToInt32(obj);
+                var cmdDel = new MySqlCommand(
+                    "DELETE FROM CardChronicDiseases WHERE AmbulatoryCardID = @cardId AND DiseaseID = @diseaseId",
+                    conn);
+                cmdDel.Parameters.AddWithValue("@cardId", _cardId);
+                cmdDel.Parameters.AddWithValue("@diseaseId", diseaseId);
+                cmdDel.ExecuteNonQuery();
+            }
+
+            DiseaseList.Items.Remove(name);
+        }
 
         private void Complete_Click(object sender, RoutedEventArgs e)
         {
@@ -162,17 +301,13 @@ namespace Clinic.View.Doctor
             Close();
         }
 
-
         private void NoShow_Click(object sender, RoutedEventArgs e)
         {
             _appointment.Notes = NotesBox.Text;
-
             _appointment.Status = "Пацієнт не з’явився";
-
             DialogResult = true;
             Close();
         }
-
 
         private void EnableEditing_Click(object sender, RoutedEventArgs e)
         {

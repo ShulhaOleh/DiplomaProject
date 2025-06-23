@@ -7,6 +7,7 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using System.Windows;
 using System;
+using System.Data;
 
 namespace Clinic.ViewModels
 {
@@ -19,35 +20,51 @@ namespace Clinic.ViewModels
         {
             LoginCommand = new RelayCommand(Login);
             LoadSavedCredentials();
+            Message = "";
         }
 
         private string _username;
-        private string _password;
-        private bool _rememberMe;
-        private string _message;
-
         public string Username
         {
             get => _username;
-            set { _username = value; OnPropertyChanged(); }
+            set
+            {
+                _username = value;
+                OnPropertyChanged();
+            }
         }
 
+        private string _password;
         public string Password
         {
             get => _password;
-            set { _password = value; OnPropertyChanged(); }
+            set
+            {
+                _password = value;
+                OnPropertyChanged();
+            }
         }
 
+        private bool _rememberMe;
         public bool RememberMe
         {
             get => _rememberMe;
-            set { _rememberMe = value; OnPropertyChanged(); }
+            set
+            {
+                _rememberMe = value;
+                OnPropertyChanged();
+            }
         }
 
+        private string _message;
         public string Message
         {
             get => _message;
-            set { _message = value; OnPropertyChanged(); }
+            set
+            {
+                _message = value;
+                OnPropertyChanged();
+            }
         }
 
         public void LoadSavedCredentials()
@@ -83,58 +100,65 @@ namespace Clinic.ViewModels
 
         private void Login()
         {
+            Message = "";
+
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
-                Message = App.Current.TryFindResource("EmptyLoginFieldsMessage").ToString();
+                Message = (string)Application.Current.FindResource("EmptyLoginFieldsMessage");
                 return;
             }
 
             using var conn = AuthDB.GetConnection();
             conn.Open();
-
             string hash = GetMd5Hash(Password);
-
-            var cmd = new MySqlCommand("SELECT Role, LinkedID FROM Users WHERE Username = @u AND PasswordHash = @p", conn);
+            using var cmd = new MySqlCommand(
+                "SELECT Role, LinkedID FROM Users WHERE Username=@u AND PasswordHash=@p", conn);
             cmd.Parameters.AddWithValue("@u", Username);
             cmd.Parameters.AddWithValue("@p", hash);
 
             using var reader = cmd.ExecuteReader();
-            if (reader.Read())
+            if (!reader.Read())
             {
-                string role = reader.GetString("Role");
-                int? linkedId = reader.IsDBNull(reader.GetOrdinal("LinkedID"))
-                                ? null
-                                : reader.GetInt32(reader.GetOrdinal("LinkedID"));
-
-                SaveCredentials();
-
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    string fullName = GetFullNameByRole(role, linkedId);
-                    if (fullName != null)
-                    {
-                        if (role == "Doctor" && linkedId.HasValue)
-                            App.CurrentDoctorId = linkedId.Value;
-                        else
-                            App.CurrentDoctorId = null;
-
-                        var mainWindow = new View.MainWindow(fullName, role, linkedId, Username);
-                        mainWindow.Show();
-                        CloseLoginWindow();
-                    }
-                    else
-                        Message = App.Current.TryFindResource("NoRoleMessage").ToString();
-                });
+                Message = (string)Application.Current.FindResource("IncorrectPasswordOrLoginMessage");
+                return;
             }
-            else
-                Message = App.Current.TryFindResource("IncorrectPasswordOrLoginMessage").ToString();
+
+            string role = reader.GetString("Role");
+            int? linkedId = reader.IsDBNull("LinkedID")
+                            ? null
+                            : reader.GetInt32("LinkedID");
+            reader.Close();
+
+            SaveCredentials();
+            Message = "";
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                string fullName = GetFullNameByRole(role, linkedId);
+                if (fullName != null)
+                {
+                    if (role == "Doctor" && linkedId.HasValue)
+                        App.CurrentDoctorId = linkedId.Value;
+                    else
+                        App.CurrentDoctorId = null;
+
+                    var mainWindow = new View.MainWindow(fullName, role, linkedId, Username);
+                    mainWindow.Show();
+                    CloseLoginWindow();
+                }
+                else
+                {
+                    Message = (string)Application.Current.FindResource("NoRoleMessage");
+                }
+            });
         }
+
 
 
         public static string GetFullNameByRole(string role, int? linkedId)
         {
             if (role == "Admin" || linkedId == null)
-                return "Системний адміністратор";
+                return (string)Application.Current.FindResource("Sys_Admin");
 
             using (var conn = Clinic.DB.ClinicDB.GetConnection())
             {
@@ -153,14 +177,14 @@ namespace Clinic.ViewModels
                         idColumn = "ReceptionistID";
                         break;
                     default:
-                        return "Невідома роль";
+                        return (string)Application.Current.FindResource("Unknown_Role");
                 }
 
                 var cmd = new MySqlCommand($"SELECT CONCAT(FirstName, ' ', LastName) FROM {table} WHERE {idColumn} = @id", conn);
                 cmd.Parameters.AddWithValue("@id", linkedId);
 
                 var result = cmd.ExecuteScalar();
-                return result?.ToString() ?? "Невідомо";
+                return result?.ToString() ?? (string)Application.Current.FindResource("Unknown");
             }
         }
 

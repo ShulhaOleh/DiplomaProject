@@ -10,13 +10,15 @@ namespace Clinic.ViewModels
 
         public RelayCommand(Action<T> execute, Predicate<T> canExecute = null)
         {
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
-        public bool CanExecute(object parameter) => _canExecute?.Invoke((T)parameter) ?? true;
+        public bool CanExecute(object parameter) =>
+            _canExecute?.Invoke((T)parameter) ?? true;
 
-        public void Execute(object parameter) => _execute((T)parameter);
+        public void Execute(object parameter) =>
+            _execute((T)parameter);
 
         public event EventHandler CanExecuteChanged
         {
@@ -24,6 +26,7 @@ namespace Clinic.ViewModels
             remove => CommandManager.RequerySuggested -= value;
         }
     }
+
 
     public class RelayCommand : ICommand
     {

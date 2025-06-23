@@ -10,6 +10,9 @@
     <sys:String x:Key="NoRoleMessage">User found, but no data to display.</sys:String>
     <sys:String x:Key="IncorrectPasswordOrLoginMessage">Incorrect login or password.</sys:String>
     <sys:String x:Key="EmptyLoginFieldsMessage">Please fill in your login and password.</sys:String>
+    <sys:String x:Key="Unknown">Unknown</sys:String>
+    <sys:String x:Key="Unknown_Role">Unknown role</sys:String>
+    <sys:String x:Key="Remember_Me">Remember me</sys:String>
 
     <!-- ProfileView -->
     <sys:String x:Key="FullNameLabel">Full name:</sys:String>

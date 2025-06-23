@@ -10,6 +10,9 @@
     <sys:String x:Key="NoRoleMessage">Користувача знайдено, але дані для відображення відсутні.</sys:String>
     <sys:String x:Key="IncorrectPasswordOrLoginMessage">Невірний логін або пароль.</sys:String>
     <sys:String x:Key="EmptyLoginFieldsMessage">Будь ласка, заповніть логін та пароль.</sys:String>
+    <sys:String x:Key="Unknown">Невідомо</sys:String>
+    <sys:String x:Key="Unknown_Role">Невідома роль</sys:String>
+    <sys:String x:Key="Remember_Me">Запам'ятати мене</sys:String>
 
     <!-- ProfileView -->
     <sys:String x:Key="FullNameLabel">ПІБ:</sys:String>
