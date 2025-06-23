@@ -2,52 +2,58 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Редагування користувача"
-        Height="330" Width="450" WindowStartupLocation="CenterScreen"
+        Height="360" Width="450" WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
-
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Логін -->
             <RowDefinition Height="Auto"/>
+            <!-- Роль -->
             <RowDefinition Height="Auto"/>
+            <!-- Прізвище -->
             <RowDefinition Height="Auto"/>
+            <!-- Ім’я -->
             <RowDefinition Height="Auto"/>
+            <!-- По батькові -->
             <RowDefinition Height="Auto"/>
+            <!-- Телефон -->
             <RowDefinition Height="Auto"/>
+            <!-- Пароль -->
             <RowDefinition Height="Auto"/>
+            <!-- Кнопки -->
         </Grid.RowDefinitions>
 
         <!-- Username -->
-        <TextBlock Text="Логін:" Grid.Row="0"/>
+        <TextBlock Text="Логін:" Grid.Row="0" VerticalAlignment="Center"/>
         <TextBox x:Name="UsernameBox" Grid.Row="0" Margin="100,0,0,10" Width="280"/>
 
         <!-- Role -->
-        <TextBlock Text="Роль:" Grid.Row="1"/>
+        <TextBlock Text="Роль:" Grid.Row="1" VerticalAlignment="Center"/>
         <ComboBox x:Name="RoleBox" Grid.Row="1" Margin="100,0,0,10" Width="280"
                   SelectionChanged="RoleBox_SelectionChanged">
             <ComboBoxItem Content="Doctor"/>
             <ComboBoxItem Content="Receptionist"/>
-            <ComboBoxItem Content="Admin"/>
         </ComboBox>
 
         <!-- LastName -->
-        <TextBlock Text="Прізвище:" Grid.Row="2"/>
+        <TextBlock Text="Прізвище:" Grid.Row="2" VerticalAlignment="Center"/>
         <TextBox x:Name="LastNameBox" Grid.Row="2" Margin="100,0,0,10" Width="280"/>
 
         <!-- FirstName -->
-        <TextBlock Text="Ім’я:" Grid.Row="3"/>
+        <TextBlock Text="Ім’я:" Grid.Row="3" VerticalAlignment="Center"/>
         <TextBox x:Name="FirstNameBox" Grid.Row="3" Margin="100,0,0,10" Width="280"/>
 
         <!-- FathersName -->
-        <TextBlock Text="По батькові:" Grid.Row="4"/>
+        <TextBlock Text="По батькові:" Grid.Row="4" VerticalAlignment="Center"/>
         <TextBox x:Name="FathersNameBox" Grid.Row="4" Margin="100,0,0,10" Width="280"/>
 
         <!-- Phone -->
-        <TextBlock Text="Телефон:" Grid.Row="5"/>
+        <TextBlock Text="Телефон:" Grid.Row="5" VerticalAlignment="Center"/>
         <TextBox x:Name="PhoneBox" Grid.Row="5" Margin="100,0,0,10" Width="280"/>
 
         <!-- Password -->
-        <TextBlock x:Name="PasswordLabel" Text="Пароль:" Grid.Row="6"/>
+        <TextBlock x:Name="PasswordLabel" Text="Пароль:" Grid.Row="6" VerticalAlignment="Center"/>
         <PasswordBox x:Name="PasswordBox" Grid.Row="6" Margin="100,0,0,10" Width="280"/>
 
         <!-- Buttons -->

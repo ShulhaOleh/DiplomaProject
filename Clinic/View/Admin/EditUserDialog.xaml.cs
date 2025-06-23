@@ -1,62 +1,81 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Clinic.Models;
 using Clinic.DB;
+using Clinic.Models;
 using MySql.Data.MySqlClient;
-using System.Data;
 
 namespace Clinic.View.Admin
 {
     public partial class EditUserDialog : Window
     {
+        private readonly bool _isEdit;
+        private readonly User _user;
+
+        // Віддаємо ці дані назад у VM
         public string Username => UsernameBox.Text.Trim();
         public string Role => (RoleBox.SelectedItem as ComboBoxItem)?.Content.ToString();
         public string Password => PasswordBox.Password;
-        public string FirstName => FirstNameBox.Text.Trim();
         public string LastName => LastNameBox.Text.Trim();
+        public string FirstName => FirstNameBox.Text.Trim();
         public string FathersName => FathersNameBox.Text.Trim();
         public string Phone => PhoneBox.Text.Trim();
 
-        private readonly bool _isEdit;
-        private readonly int? _existingLinkedId;
-
+        // Ось ця властивість раніше була відсутня → тому компілятор скаржився
         public int? LinkedID { get; private set; }
 
         public EditUserDialog(User user)
         {
             InitializeComponent();
+            _user = user;
             _isEdit = user != null;
+
+            RoleBox.SelectedIndex = 0;
 
             if (_isEdit)
             {
                 Title = "Редагування користувача";
                 UsernameBox.Text = user.Username;
-                _existingLinkedId = user.LinkedID;
                 PasswordLabel.Text = "Новий пароль:";
 
-                RoleBox.SelectedItem = RoleBox.Items
-                    .Cast<ComboBoxItem>()
-                    .FirstOrDefault(i => i.Content.ToString() == user.Role);
+                // зберігаємо старий LinkedID
+                LinkedID = user.LinkedID;
 
-                if (user.Role is "Doctor" or "Receptionist" && user.LinkedID.HasValue)
-                {
-                    LoadProfileData(user.Role, user.LinkedID.Value);
-                    LinkedID = user.LinkedID.Value;
-                }
+                // підвантажуємо існуючі дані
+                if (LinkedID.HasValue)
+                    LoadProfileData(user.Role, LinkedID.Value);
+
+                // виставляємо роль
+                var item = RoleBox.Items
+                                  .Cast<ComboBoxItem>()
+                                  .FirstOrDefault(i => i.Content.ToString() == user.Role);
+                if (item != null) RoleBox.SelectedItem = item;
             }
             else
             {
                 Title = "Додавання користувача";
-                RoleBox.SelectedIndex = 0;
-                _existingLinkedId = null;
-                LinkedID = null;
                 PasswordLabel.Text = "Пароль:";
+                LinkedID = null;
+            }
+
+            RoleBox.SelectionChanged += RoleBox_SelectionChanged;
+        }
+
+        private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Якщо додаємо нового — чистимо поля
+            if (!_isEdit)
+            {
+                LastNameBox.Clear();
+                FirstNameBox.Clear();
+                FathersNameBox.Clear();
+                PhoneBox.Clear();
             }
         }
 
-        private void LoadProfileData(string role, int id)
+        private void LoadProfileData(string role, int linkedId)
         {
             string table = role == "Doctor" ? "Doctors" : "Receptionist";
             string idField = role == "Doctor" ? "DoctorID" : "ReceptionistID";
@@ -64,114 +83,95 @@ namespace Clinic.View.Admin
             using var conn = ClinicDB.GetConnection();
             conn.Open();
 
-            var cmd = new MySqlCommand(
-                $"SELECT LastName, FirstName, FathersName, PhoneNumber FROM {table} WHERE {idField} = @id",
+            using var cmd = new MySqlCommand(
+                $"SELECT LastName, FirstName, FathersName, PhoneNumber FROM {table} WHERE {idField}=@id",
                 conn);
-            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@id", linkedId);
 
-            using var reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                LastNameBox.Text = reader.GetString("LastName");
-                FirstNameBox.Text = reader.GetString("FirstName");
-                FathersNameBox.Text = reader.IsDBNull("FathersName") ? "" : reader.GetString("FathersName");
-                PhoneBox.Text = reader.IsDBNull("PhoneNumber") ? "" : reader.GetString("PhoneNumber");
-            }
-        }
+            using var rdr = cmd.ExecuteReader();
+            if (!rdr.Read()) return;
 
-        private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!_isEdit)
-            {
-                LastNameBox.Text = "";
-                FirstNameBox.Text = "";
-                FathersNameBox.Text = "";
-                PhoneBox.Text = "";
-            }
+            LastNameBox.Text = rdr.IsDBNull("LastName") ? "" : rdr.GetString("LastName");
+            FirstNameBox.Text = rdr.IsDBNull("FirstName") ? "" : rdr.GetString("FirstName");
+            FathersNameBox.Text = rdr.IsDBNull("FathersName") ? "" : rdr.GetString("FathersName");
+            PhoneBox.Text = rdr.IsDBNull("PhoneNumber") ? "" : rdr.GetString("PhoneNumber");
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(Username))
+            // мінімальна валідація
+            if (string.IsNullOrWhiteSpace(Username) ||
+                string.IsNullOrWhiteSpace(Role) ||
+                string.IsNullOrWhiteSpace(LastName) ||
+                string.IsNullOrWhiteSpace(FirstName))
             {
-                MessageBox.Show("Введіть логін.");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(Role))
-            {
-                MessageBox.Show("Оберіть роль.");
-                return;
-            }
-
-            if ((Role == "Doctor" || Role == "Receptionist") &&
-                (string.IsNullOrWhiteSpace(LastName) || string.IsNullOrWhiteSpace(FirstName)))
-            {
-                MessageBox.Show("Введіть прізвище та ім’я для профілю.");
+                MessageBox.Show("Заповніть усі обов’язкові поля.");
                 return;
             }
 
             if (_isEdit)
             {
-                if (Role is "Doctor" or "Receptionist" && LinkedID.HasValue)
-                {
-                    string table = Role == "Doctor" ? "Doctors" : "Receptionist";
-                    string idField = Role == "Doctor" ? "DoctorID" : "ReceptionistID";
-
-                    using var conn = ClinicDB.GetConnection();
-                    conn.Open();
-
-                    var cmd = new MySqlCommand($@"
-                        UPDATE {table}
-                        SET LastName = @last, FirstName = @first, FathersName = @father, PhoneNumber = @phone
-                        WHERE {idField} = @id", conn);
-
-                    cmd.Parameters.AddWithValue("@last", LastName);
-                    cmd.Parameters.AddWithValue("@first", FirstName);
-                    cmd.Parameters.AddWithValue("@father", string.IsNullOrWhiteSpace(FathersName) ? DBNull.Value : FathersName);
-                    cmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(Phone) ? DBNull.Value : Phone);
-                    cmd.Parameters.AddWithValue("@id", LinkedID.Value);
-
-                    cmd.ExecuteNonQuery();
-                }
+                UpdateProfileData();
             }
             else
             {
-                if (Role is "Doctor" or "Receptionist")
-                {
-                    string table = Role == "Doctor" ? "Doctors" : "Receptionist";
-                    string cmdText;
-
-                    if (Role == "Doctor")
-                    {
-                        cmdText = @"
-                            INSERT INTO Doctors (LastName, FirstName, FathersName, PhoneNumber, DateOfBirth, Specialty, BreakHour)
-                            VALUES (@last, @first, @father, @phone, CURDATE(), 'ЛОР', '13:00:00');
-                            SELECT LAST_INSERT_ID();";
-                    }
-                    else
-                    {
-                        cmdText = @"
-                            INSERT INTO Receptionist (LastName, FirstName, FathersName, PhoneNumber)
-                            VALUES (@last, @first, @father, @phone);
-                            SELECT LAST_INSERT_ID();";
-                    }
-
-                    using var conn = ClinicDB.GetConnection();
-                    conn.Open();
-
-                    var cmd = new MySqlCommand(cmdText, conn);
-                    cmd.Parameters.AddWithValue("@last", LastName);
-                    cmd.Parameters.AddWithValue("@first", FirstName);
-                    cmd.Parameters.AddWithValue("@father", string.IsNullOrWhiteSpace(FathersName) ? DBNull.Value : FathersName);
-                    cmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(Phone) ? DBNull.Value : Phone);
-
-                    LinkedID = Convert.ToInt32(cmd.ExecuteScalar());
-                }
+                InsertProfileData();
             }
 
             DialogResult = true;
             Close();
+        }
+
+        private void UpdateProfileData()
+        {
+            if (!LinkedID.HasValue) return;
+
+            string table = Role == "Doctor" ? "Doctors" : "Receptionist";
+            string idField = Role == "Doctor" ? "DoctorID" : "ReceptionistID";
+
+            using var conn = ClinicDB.GetConnection();
+            conn.Open();
+            using var cmd = new MySqlCommand($@"
+                UPDATE {table}
+                   SET LastName    = @last,
+                       FirstName   = @first,
+                       FathersName = @father,
+                       PhoneNumber = @phone
+                 WHERE {idField}   = @id", conn);
+
+            cmd.Parameters.AddWithValue("@last", LastName);
+            cmd.Parameters.AddWithValue("@first", FirstName);
+            cmd.Parameters.AddWithValue("@father", string.IsNullOrWhiteSpace(FathersName) ? DBNull.Value : FathersName);
+            cmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(Phone) ? DBNull.Value : Phone);
+            cmd.Parameters.AddWithValue("@id", LinkedID.Value);
+
+            cmd.ExecuteNonQuery();
+        }
+
+        private void InsertProfileData()
+        {
+            string table = Role == "Doctor" ? "Doctors" : "Receptionist";
+            string columns = Role == "Doctor"
+                ? "LastName,FirstName,FathersName,PhoneNumber,DateOfBirth,Specialty,BreakHour"
+                : "LastName,FirstName,FathersName,PhoneNumber";
+            string values = Role == "Doctor"
+                ? "@last,@first,@father,@phone,CURDATE(),'ЛОР','13:00:00'; SELECT LAST_INSERT_ID();"
+                : "@last,@first,@father,@phone; SELECT LAST_INSERT_ID();";
+
+            using var conn = ClinicDB.GetConnection();
+            conn.Open();
+
+            using var cmd = new MySqlCommand(
+                $"INSERT INTO {table} ({columns}) VALUES ({values})",
+                conn);
+
+            cmd.Parameters.AddWithValue("@last", LastName);
+            cmd.Parameters.AddWithValue("@first", FirstName);
+            cmd.Parameters.AddWithValue("@father", string.IsNullOrWhiteSpace(FathersName) ? DBNull.Value : FathersName);
+            cmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(Phone) ? DBNull.Value : Phone);
+
+            // отримаємо щойно вставлений ключ
+            LinkedID = Convert.ToInt32(cmd.ExecuteScalar());
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

@@ -45,4 +45,7 @@
     <sys:String x:Key="Btn_MarkNoShow">Позначити як не з’явився</sys:String>
     <sys:String x:Key="Msg_AlreadyHandled">Цей прийом уже завершено або позначено як 'не з’явився'.</sys:String>
 
+
+    <sys:String x:Key="Sys_Admin">Системнй адміністратор</sys:String>
+
 </ResourceDictionary>

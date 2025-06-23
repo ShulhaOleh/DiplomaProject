@@ -8,18 +8,18 @@
     <Grid Margin="10">
         <StackPanel>
             <TextBlock 
-          Text="{DynamicResource AppointmentManagement_Header}"
-          FontSize="16" FontWeight="Bold"
-          Margin="0,0,0,10"/>
+                  Text="{DynamicResource AppointmentManagement_Header}"
+                  FontSize="16" FontWeight="Bold"
+                  Margin="0,0,0,10"/>
 
             <DataGrid 
-              ItemsSource="{Binding TodayAppointments}"
-              AutoGenerateColumns="False"
-              CanUserAddRows="False"
-              IsReadOnly="True"
-              SelectedItem="{Binding SelectedAppointment}"
-              Margin="0,0,0,10"
-              HeadersVisibility="Column">   
+                  ItemsSource="{Binding TodayAppointments}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  SelectedItem="{Binding SelectedAppointment}"
+                  Margin="0,0,0,10"
+                  HeadersVisibility="Column">   
 
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">

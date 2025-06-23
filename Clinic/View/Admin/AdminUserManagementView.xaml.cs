@@ -22,7 +22,7 @@ namespace Clinic.View.Admin
         {
             if (DataContext is AdminUserManagementViewModel vm && vm.SelectedUser != null)
             {
-                vm.DeleteUser(vm.SelectedUser, vm.AdminUsername);
+                vm.DeleteUser(vm.SelectedUser);
             }
         }
 

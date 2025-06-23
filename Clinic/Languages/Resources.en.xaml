@@ -44,5 +44,7 @@
     <sys:String x:Key="Column_Date">Date</sys:String>
     <sys:String x:Key="Btn_MarkNoShow">Mark as No-Show</sys:String>
     <sys:String x:Key="Msg_AlreadyHandled">This appointment is already completed or marked as no-show.</sys:String>
+    
+    <sys:String x:Key="Sys_Admin">System admin</sys:String>
 
 </ResourceDictionary>

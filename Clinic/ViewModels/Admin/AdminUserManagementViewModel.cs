@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows;
-using System.Windows.Input;
 using Clinic.DB;
 using Clinic.Models;
 using Clinic.View.Admin;
@@ -14,51 +15,47 @@ namespace Clinic.ViewModels.Admin
     {
         public ObservableCollection<User> Users { get; } = new();
         public User SelectedUser { get; set; }
-
-        public ICommand DeleteUserCommand { get; }
-        public ICommand AddUserCommand { get; }
-        public ICommand EditUserCommand { get; }
         public string AdminUsername { get; }
+
         public AdminUserManagementViewModel(string adminUsername)
         {
             AdminUsername = adminUsername;
             LoadUsers();
         }
 
-
         public void LoadUsers()
         {
             Users.Clear();
-
             using var conn = AuthDB.GetConnection();
             conn.Open();
-
-            using var cmd = new MySqlCommand("SELECT UserID, Username, Role, LinkedID FROM Users WHERE Role != 'Admin'", conn);
-            using var reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using var cmd = new MySqlCommand(
+                "SELECT UserID, Username, Role, LinkedID FROM Users WHERE Role <> 'Admin'",
+                conn);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
             {
-                int linkedId = reader.IsDBNull("LinkedID") ? 0 : reader.GetInt32("LinkedID");
-                string role = reader.GetString("Role");
-
-                var (last, first, father) = GetLinkedNames(role, linkedId);
-
-                Users.Add(new User
+                var u = new User
                 {
-                    UserID = reader.GetInt32("UserID"),
-                    Username = reader.GetString("Username"),
-                    Role = role,
-                    LinkedID = linkedId,
-                    FirstName = first,
-                    LastName = last,
-                    FathersName = father
-                });
+                    UserID = rdr.GetInt32("UserID"),
+                    Username = rdr.GetString("Username"),
+                    Role = rdr.GetString("Role"),
+                    LinkedID = rdr.IsDBNull("LinkedID")
+                                 ? (int?)null
+                                 : rdr.GetInt32("LinkedID")
+                };
+
+                var (last, first, father) = GetLinkedNames(u.Role, u.LinkedID);
+                u.LastName = last;
+                u.FirstName = first;
+                u.FathersName = father;
+
+                Users.Add(u);
             }
         }
 
-        private (string last, string first, string father) GetLinkedNames(string role, int id)
+        private (string last, string first, string father) GetLinkedNames(string role, int? id)
         {
-            if (role != "Doctor" && role != "Receptionist")
+            if (id == null || (role != "Doctor" && role != "Receptionist"))
                 return ("—", "", "");
 
             string table = role == "Doctor" ? "Doctors" : "Receptionist";
@@ -66,122 +63,111 @@ namespace Clinic.ViewModels.Admin
 
             using var conn = ClinicDB.GetConnection();
             conn.Open();
+            using var cmd = new MySqlCommand(
+                $"SELECT LastName, FirstName, FathersName FROM {table} WHERE {idField}=@id",
+                conn);
+            cmd.Parameters.AddWithValue("@id", id.Value);
 
-            var cmd = new MySqlCommand(
-                $"SELECT LastName, FirstName, FathersName FROM {table} WHERE {idField} = @id", conn);
-            cmd.Parameters.AddWithValue("@id", id);
+            using var rdr = cmd.ExecuteReader();
+            if (!rdr.Read()) return ("—", "", "");
 
-            using var reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                return (
-                    reader.GetString("LastName"),
-                    reader.GetString("FirstName"),
-                    reader.IsDBNull("FathersName") ? "" : reader.GetString("FathersName")
-                );
-            }
-
-            return ("—", "", "");
+            var last = rdr.GetString("LastName");
+            var first = rdr.GetString("FirstName");
+            var father = rdr.IsDBNull("FathersName") ? "" : rdr.GetString("FathersName");
+            return (last, first, father);
         }
 
-
-        public void DeleteUser(User user, string adminUsername)
+        public void DeleteUser(User user)
         {
-            var confirmDialog = new ConfirmAdminPasswordDialog();
-            if (confirmDialog.ShowDialog() != true)
-                return;
+            if (user == null) return;
 
-            string enteredPassword = confirmDialog.EnteredPassword;
+            var dlg = new ConfirmAdminPasswordDialog();
+            if (dlg.ShowDialog() != true) return;
 
             using var conn = AuthDB.GetConnection();
             conn.Open();
+            using var authCmd = new MySqlCommand(
+                "SELECT PasswordHash FROM Users WHERE Username=@u AND Role='Admin'",
+                conn);
+            authCmd.Parameters.AddWithValue("@u", AdminUsername);
 
-            var authCmd = new MySqlCommand(
-                "SELECT PasswordHash FROM Users WHERE Username = @username AND Role = 'Admin'", conn);
-            authCmd.Parameters.AddWithValue("@username", adminUsername);
-
-            var result = authCmd.ExecuteScalar();
-
-            if (result == null)
+            var storedHash = authCmd.ExecuteScalar() as string;
+            if (storedHash == null)
             {
                 MessageBox.Show("Адміністратора не знайдено.");
                 return;
             }
 
-            using var md5 = System.Security.Cryptography.MD5.Create();
-            byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(enteredPassword);
-            byte[] hashBytes = md5.ComputeHash(inputBytes);
-            string enteredHash = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            using var md5 = MD5.Create();
+            var hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(dlg.EnteredPassword));
+            var entered = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
 
-            if (result.ToString() != enteredHash)
+            if (entered != storedHash)
             {
                 MessageBox.Show("Невірний пароль адміністратора.");
                 return;
             }
 
-            using var delConn = AuthDB.GetConnection();
-            delConn.Open();
-
-            var delCmd = new MySqlCommand("DELETE FROM Users WHERE UserID = @id", delConn);
+            using var delCmd = new MySqlCommand(
+                "DELETE FROM Users WHERE UserID=@id", conn);
             delCmd.Parameters.AddWithValue("@id", user.UserID);
-            delCmd.ExecuteNonQuery();
 
-            Users.Remove(user);
-            MessageBox.Show("Користувача успішно видалено.");
+            try
+            {
+                delCmd.ExecuteNonQuery();
+                LoadUsers();
+                MessageBox.Show("Користувача успішно видалено.");
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Помилка при видаленні: {ex.Message}");
+            }
         }
-
-
-
 
         public void AddUser()
         {
-            var dialog = new View.Admin.EditUserDialog(null);
-            if (dialog.ShowDialog() == true)
-            {
-                using var conn = AuthDB.GetConnection();
-                conn.Open();
+            var dlg = new EditUserDialog(null);
+            if (dlg.ShowDialog() != true) return;
 
-                var cmd = new MySqlCommand(
-                    "INSERT INTO Users (Username, PasswordHash, Role, LinkedID, CreatedAt) VALUES (@u, MD5(@p), @r, @l, NOW())",
-                    conn
-                );
-                cmd.Parameters.AddWithValue("@u", dialog.Username);
-                cmd.Parameters.AddWithValue("@p", dialog.Password);
-                cmd.Parameters.AddWithValue("@r", dialog.Role);
-                cmd.Parameters.AddWithValue("@l", dialog.LinkedID.HasValue ? dialog.LinkedID : DBNull.Value);
+            using var conn = AuthDB.GetConnection();
+            conn.Open();
+            using var cmd = new MySqlCommand(
+                "INSERT INTO Users (Username,PasswordHash,Role,LinkedID,CreatedAt) " +
+                "VALUES (@u,MD5(@p),@r,@l,NOW())",
+                conn);
+            cmd.Parameters.AddWithValue("@u", dlg.Username);
+            cmd.Parameters.AddWithValue("@p", dlg.Password);
+            cmd.Parameters.AddWithValue("@r", dlg.Role);
+            cmd.Parameters.AddWithValue("@l", dlg.LinkedID ?? (object)DBNull.Value);
 
-                cmd.ExecuteNonQuery();
-                LoadUsers();
-            }
+            cmd.ExecuteNonQuery();
+            LoadUsers();
         }
 
-        private void EditUser(User user)
+        public void EditUser(User user)
         {
             if (user == null) return;
 
-            var dialog = new View.Admin.EditUserDialog(user); 
-            if (dialog.ShowDialog() == true)
-            {
-                using var conn = AuthDB.GetConnection();
-                conn.Open();
+            var dlg = new EditUserDialog(user);
+            if (dlg.ShowDialog() != true) return;
 
-                var cmd = new MySqlCommand(@"
-                    UPDATE Users 
-                    SET Username = @u, Role = @r, LinkedID = @l
-                    " + (string.IsNullOrWhiteSpace(dialog.Password) ? "" : ", PasswordHash = MD5(@p)") + @"
-                    WHERE UserID = @id", conn);
+            using var conn = AuthDB.GetConnection();
+            conn.Open();
+            using var cmd = new MySqlCommand(
+                "UPDATE Users SET Username=@u,Role=@r,LinkedID=@l" +
+                (string.IsNullOrWhiteSpace(dlg.Password) ? "" : ",PasswordHash=MD5(@p)") +
+                " WHERE UserID=@id",
+                conn);
 
-                cmd.Parameters.AddWithValue("@u", dialog.Username);
-                cmd.Parameters.AddWithValue("@r", dialog.Role);
-                cmd.Parameters.AddWithValue("@l", dialog.LinkedID.HasValue ? dialog.LinkedID : DBNull.Value);
-                cmd.Parameters.AddWithValue("@id", user.UserID);
+            cmd.Parameters.AddWithValue("@u", dlg.Username);
+            cmd.Parameters.AddWithValue("@r", dlg.Role);
+            cmd.Parameters.AddWithValue("@l", dlg.LinkedID ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@id", user.UserID);
+            if (!string.IsNullOrWhiteSpace(dlg.Password))
+                cmd.Parameters.AddWithValue("@p", dlg.Password);
 
-                if (!string.IsNullOrWhiteSpace(dialog.Password))
-                    cmd.Parameters.AddWithValue("@p", dialog.Password);
-
-                cmd.ExecuteNonQuery();
-                LoadUsers();
-            }
+            cmd.ExecuteNonQuery();
+            LoadUsers();
         }
     }
 }
