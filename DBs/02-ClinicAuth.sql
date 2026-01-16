@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS ClinicAuth;
-
+﻿SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 CREATE DATABASE IF NOT EXISTS ClinicAuth;
 USE ClinicAuth;
 
@@ -15,3 +15,4 @@ CREATE TABLE Users (
         (Role IN ('Doctor', 'Receptionist') AND LinkedID IS NOT NULL)
     )
 );
+

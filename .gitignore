@@ -7,3 +7,5 @@ obj/
 *.pdb
 *.dbmdl
 .vs/
+# NEVER commit your own environment variables
+.env

@@ -1,3 +1,7 @@
+﻿SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+USE Clinic;
+
 INSERT INTO Specialties (Name) VALUES
 ('ЛОР'),
 ('Гінеколог'),
@@ -963,3 +967,4 @@ INSERT INTO Appointments (PatientID, DoctorID, ReceptionistID, AmbulatoryCardID,
 (22, 1, 2, 22, '2025-06-25 15:00:00', 'Очікується', 'Призначено курс знеболюючих ін’єкцій.'),
 (23, 1, 3, 23, '2025-06-25 16:00:00', 'Очікується', 'Перев’язка з антисептичним розчином.'),
 (24, 1, 4, 24, '2025-06-25 17:00:00', 'Очікується', 'Плановий контроль заживання тканин.');
+

@@ -1,6 +1,9 @@
+# Right click and press "Run with PowerShell" to create/update structure in structure.txt
+# If you want to double-click it every time, use .bat file
+
 $outputFile = "structure.txt"
 $excludedDirs = @("bin", "obj", ".git", "venv", ".gitignore", "Clinic.sln")
-$excludedFiles = @("generate_structure.bat", "generate_structure.ps1", "structure.txt")
+$excludedFiles = @("structure.txt")
 
 function Show-Tree {
     param (
@@ -28,5 +31,10 @@ function Show-Tree {
     }
 }
 
-Set-Content -Path $outputFile -Value "Clinic/"
-Show-Tree -Path "." -Prefix ""
+$rootPath = Split-Path -Parent $PSScriptRoot
+$rootFolderName = Split-Path -Leaf $rootPath
+
+Set-Content -Path $outputFile -Value "$rootFolderName/"
+Show-Tree -Path $rootPath -Prefix ""
+
+Write-Host "Structure saved in $outputFile"

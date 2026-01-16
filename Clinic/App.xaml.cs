@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Clinic.DB;
+using Clinic.Properties;
+using System;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
-using Clinic.Properties;
 
 namespace Clinic
 {
@@ -11,6 +12,22 @@ namespace Clinic
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            try
+            {
+                EnvLoader.Load();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error loading .env file: {ex.Message}\n\n" +
+                    "Make sure the .env file exists in the project root directory.",
+                    "Configuration Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Shutdown();
+                return;
+            }
 
             var lang = Settings.Default.AppLanguage;
             if (string.IsNullOrEmpty(lang))

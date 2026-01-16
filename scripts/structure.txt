@@ -1,7 +1,9 @@
 Clinic/
 ├── Clinic
 │   ├── Assets
-│   │   └── catalog.png
+│   │   ├── catalog.png
+│   │   ├── hospital.ico
+│   │   └── hospital.png
 │   ├── Converters
 │   │   ├── DateOnlyConverter.cs
 │   │   ├── InverseBoolConverter.cs
@@ -9,7 +11,18 @@ Clinic/
 │   ├── DB
 │   │   ├── AuthDB.cs
 │   │   ├── ClinicDB.cs
-│   │   └── DBHelper.cs
+│   │   ├── DBHelper.cs
+│   │   └── EnvLoader.cs
+│   ├── DBs
+│   │   ├── 00-init.sql
+│   │   ├── 01-Clinic.sql
+│   │   ├── 02-ClinicAuth.sql
+│   │   ├── 03-ClinicFill.sql
+│   │   └── 04-ClinicAuthFill.sql
+│   ├── Langs
+│   │   └── PublishProfiles
+│   │       ├── FolderProfile.pubxml
+│   │       └── FolderProfile.pubxml.user
 │   ├── Languages
 │   │   ├── Resources.en.xaml
 │   │   └── Resources.uk.xaml
@@ -75,11 +88,21 @@ Clinic/
 │   ├── AssemblyInfo.cs
 │   ├── Clinic.csproj
 │   └── Clinic.csproj.user
-└── DBs
-    ├── DB
-    │   └── clinic.sql
-    └── DB Code
-        ├── Clinic.sql
-        ├── ClinicAuth.sql
-        ├── fill_clinic.sql
-        └── fill_clinicauth.sql
+├── DBs
+│   ├── 00-Init.sql
+│   ├── 01-Clinic.sql
+│   ├── 02-ClinicAuth.sql
+│   ├── 03-ClinicFill.sql
+│   └── 04-ClinicAuthFill.sql
+├── scripts
+│   ├── fix_encoding.bat
+│   ├── fix_encoding.ps1
+│   ├── generate_structure.bat
+│   ├── generate_structure.ps1
+│   └── setup.ps1
+├── .env
+├── .env.example
+├── docker-compose.yml
+├── LICENSE
+├── readme.md
+└── readme.uk.md

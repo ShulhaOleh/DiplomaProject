@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS Clinic;
-
+﻿SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 CREATE DATABASE IF NOT EXISTS Clinic;
 USE Clinic;
 
@@ -99,6 +99,7 @@ CREATE TABLE Appointments (
     FOREIGN KEY (ReceptionistID) REFERENCES Receptionist(ReceptionistID),
     FOREIGN KEY (AmbulatoryCardID) REFERENCES AmbulatoryCards(AmbulatoryCardID)
 );
+
 
 
 
