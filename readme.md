@@ -4,8 +4,8 @@
 
 # Clinic Management System
 
-[![ENG](https://img.shields.io/badge/lang-English-red)](README.md)
-[![UKR](https://img.shields.io/badge/lang-Ukrainian-blue)](README.uk.md)
+[![ENG](https://img.shields.io/badge/lang-English-red)](readme.md)
+[![UKR](https://img.shields.io/badge/lang-Ukrainian-blue)](readme.uk.md)
 
 </div>
 
