@@ -1,6 +1,5 @@
 ﻿using Clinic.Models;
 using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,25 +11,10 @@ namespace Clinic.View.Doctor
     public partial class DoctorAppointmentsView : UserControl
     {
         private DoctorAppointmentsViewModel _viewModel;
-        private readonly string _statusCompleted;
-        private readonly string _statusNoShow;
-        private readonly string _msgCompleted;
-        private readonly string _msgNoShow;
-        private readonly string _msgUpdated;
-        private readonly string _titleDone;
 
         public DoctorAppointmentsView()
         {
             InitializeComponent();
-
-            // подгружаем переводы из ресурсов
-            _statusCompleted = (string)Application.Current.TryFindResource("Status_Completed");
-            _statusNoShow = (string)Application.Current.TryFindResource("Status_NoShow");
-            _msgCompleted = (string)Application.Current.TryFindResource("Msg_CompletedSuccess");
-            _msgNoShow = (string)Application.Current.TryFindResource("Msg_NoShowSuccess");
-            _msgUpdated = (string)Application.Current.TryFindResource("Msg_StatusUpdated");
-            _titleDone = (string)Application.Current.TryFindResource("Title_Done");
-
             Loaded += DoctorAppointmentsView_Loaded;
         }
 
@@ -56,8 +40,7 @@ namespace Clinic.View.Doctor
             if (sender is not DataGrid dg || dg.SelectedItem is not Appointment selected)
                 return;
 
-            if (selected.Status == _statusCompleted
-             || selected.Status == _statusNoShow)
+            if (selected.IsCompleted || selected.IsNoShow)
                 return;
 
             var dialog = new CompleteAppointmentWindow(selected);
@@ -67,14 +50,15 @@ namespace Clinic.View.Doctor
             {
                 _viewModel.CompleteAppointment(selected);
 
-                string msg = selected.Status switch
-                {
-                    var s when s == _statusCompleted => _msgCompleted,
-                    var s when s == _statusNoShow => _msgNoShow,
-                    _ => _msgUpdated
-                };
+                string msg = selected.IsCompleted
+                    ? (string)Application.Current.FindResource("Msg_CompletedSuccess")
+                    : selected.IsNoShow
+                        ? (string)Application.Current.FindResource("Msg_NoShowSuccess")
+                        : (string)Application.Current.FindResource("Msg_StatusUpdated");
 
-                MessageBox.Show(msg, _titleDone, MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(msg,
+                    (string)Application.Current.FindResource("Title_Done"),
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             _viewModel?.LoadAppointmentsFromDatabase();

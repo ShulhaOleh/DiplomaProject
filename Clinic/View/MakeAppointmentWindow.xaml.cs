@@ -38,7 +38,7 @@ namespace Clinic.View.Receptionist
             _patient = patient;
             DataContext = _viewModel;
 
-            PatientInfoText.Text = _patient?.FullName ?? "Пацієнта не передано";
+            PatientInfoText.Text = _patient?.FullName ?? (string)Application.Current.FindResource("Msg_PatientNotPassed");
 
             DatePicker.SelectedDate = DateTime.Today;
             _selectedDate = DatePicker.SelectedDate.Value;
@@ -215,7 +215,7 @@ namespace Clinic.View.Receptionist
 
             ScheduleGrid.Columns.Add(new DataGridTextColumn
             {
-                Header = "Час",
+                Header = (string)Application.Current.FindResource("Label_Time"),
                 Binding = new System.Windows.Data.Binding("TimeSlot"),
                 IsReadOnly = true
             });
@@ -253,13 +253,13 @@ namespace Clinic.View.Receptionist
         {
             if (_patient == null)
             {
-                MessageBox.Show("Пацієнта не передано.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_PatientNotPassed"));
                 return;
             }
 
             if (SelectedDoctor == null || SelectedTime == default)
             {
-                MessageBox.Show("Будь ласка, оберіть вільний час прийому.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_SelectTimeSlot"));
                 return;
             }
 
@@ -271,7 +271,11 @@ namespace Clinic.View.Receptionist
             else
                 _viewModel.RegisterAppointment(_patient, dateTime);
 
-            MessageBox.Show($"Пацієнта {_patient.FullName} успішно записано на {dateTime:dd.MM.yyyy HH:mm} до {SelectedDoctor.FullName}.");
+            MessageBox.Show(string.Format(
+                (string)Application.Current.FindResource("Msg_AppointmentBookedFmt"),
+                _patient.FullName,
+                dateTime.ToString("dd.MM.yyyy HH:mm"),
+                SelectedDoctor.FullName));
 
             DialogResult = true;
             Close();
@@ -294,14 +298,17 @@ namespace Clinic.View.Receptionist
 
             if (!cellInfo.IsFree)
             {
-                MessageBox.Show("Цей час зайнятий або є перерва.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_TimeSlotBusy"));
                 return;
             }
 
             SelectedDoctor = doctor;
             SelectedTime = TimeSpan.Parse(row.TimeSlot);
 
-            MessageBox.Show($"Обрано лікаря: {doctor.FullName}, час: {SelectedTime:hh\\:mm}");
+            MessageBox.Show(string.Format(
+                (string)Application.Current.FindResource("Msg_DoctorSelectedFmt"),
+                doctor.FullName,
+                SelectedTime.ToString(@"hh\:mm")));
         }
 
         private void ScheduleGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -332,14 +339,17 @@ namespace Clinic.View.Receptionist
 
             if (!cellInfo.IsFree)
             {
-                MessageBox.Show("Цей час зайнятий або є перерва.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_TimeSlotBusy"));
                 return;
             }
 
             SelectedDoctor = doctor;
             SelectedTime = TimeSpan.Parse(row.TimeSlot);
 
-            MessageBox.Show($"Обрано лікаря: {doctor.FullName}, час: {SelectedTime:hh\\:mm}");
+            MessageBox.Show(string.Format(
+                (string)Application.Current.FindResource("Msg_DoctorSelectedFmt"),
+                doctor.FullName,
+                SelectedTime.ToString(@"hh\:mm")));
         }
 
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)

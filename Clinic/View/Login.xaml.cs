@@ -132,7 +132,7 @@ namespace Clinic.View
             }
             catch (Exception ex)
             {
-                MessageTextBlock.Text = "Помилка підключення: " + ex.Message;
+                MessageTextBlock.Text = (string)FindResource("Msg_ConnectionError") + " " + ex.Message;
             }
         }
 

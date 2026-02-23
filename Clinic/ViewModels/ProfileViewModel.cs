@@ -125,13 +125,19 @@ namespace Clinic.ViewModels
         {
             if (PhoneExists(PhoneNumber))
             {
-                MessageBox.Show("Користувач з таким номером вже існує. Введіть інший номер.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(
+                    (string)Application.Current.FindResource("Msg_PhoneExists"),
+                    (string)Application.Current.FindResource("Title_Error"),
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!Regex.IsMatch(PhoneNumber, @"^\+380\d{9}$"))
             {
-                MessageBox.Show("Номер телефону має бути у форматі +380XXXXXXXXX.", "Невірний формат", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(
+                    (string)Application.Current.FindResource("Msg_InvalidPhoneFormat"),
+                    (string)Application.Current.FindResource("Title_InvalidFormat"),
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -139,16 +145,18 @@ namespace Clinic.ViewModels
             conn.Open();
 
             string query = UserRole == "Doctor"
-    ? "SELECT LastName, FirstName, FathersName, DateOfBirth, PhoneNumber FROM Doctors WHERE DoctorID = @id"
-    : "SELECT LastName, FirstName, FathersName, NULL AS DateOfBirth, PhoneNumber FROM Receptionist WHERE ReceptionistID = @id";
-
+                ? "UPDATE Doctors SET PhoneNumber = @phone WHERE DoctorID = @id"
+                : "UPDATE Receptionist SET PhoneNumber = @phone WHERE ReceptionistID = @id";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@phone", PhoneNumber);
             cmd.Parameters.AddWithValue("@id", UserId);
             cmd.ExecuteNonQuery();
 
-            MessageBox.Show("Номер телефону успішно оновлено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(
+                (string)Application.Current.FindResource("Msg_PhoneUpdated"),
+                (string)Application.Current.FindResource("Title_Success"),
+                MessageBoxButton.OK, MessageBoxImage.Information);
             IsPhoneEditable = false;
         }
 

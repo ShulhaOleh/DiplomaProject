@@ -85,7 +85,7 @@ namespace Clinic.View
 
                 var logoutItem = new System.Windows.Controls.MenuItem
                 {
-                    Header = "Розлогінитися",
+                    Header = (string)Application.Current.FindResource("Menu_Logout"),
                     FontSize = 14,
                     Padding = new Thickness(12, 6, 12, 6),
                     Command = new RelayCommand(Logout),
@@ -94,7 +94,7 @@ namespace Clinic.View
 
                 var exitItem = new System.Windows.Controls.MenuItem
                 {
-                    Header = "Вийти",
+                    Header = (string)Application.Current.FindResource("Menu_Exit"),
                     FontSize = 14,
                     Padding = new Thickness(12, 6, 12, 6),
                     Command = new RelayCommand(Exit),

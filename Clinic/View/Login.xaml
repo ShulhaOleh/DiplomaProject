@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
         ResizeMode="CanResize"
-        Title="Авторизація" Width="523" Height="307">
+        Title="{DynamicResource Login_Title}" Width="523" Height="307">
 
     <Window.DataContext>
         <vm:LoginViewModel/>

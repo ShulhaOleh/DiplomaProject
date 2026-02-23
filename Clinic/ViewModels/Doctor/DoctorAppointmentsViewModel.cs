@@ -20,16 +20,10 @@ namespace Clinic.ViewModels.Doctor
         public ICommand RegisterPatientCommand { get; }
 
         private readonly int _doctorId;
-        private readonly string _statusExpected;
-        private readonly string _statusNoShow;
-        private readonly string _statusCompleted;
 
         public DoctorAppointmentsViewModel(int doctorId)
         {
             _doctorId = doctorId;
-            _statusExpected = (string)Application.Current.FindResource("Status_Expected");
-            _statusNoShow = (string)Application.Current.FindResource("Status_NoShow");
-            _statusCompleted = (string)Application.Current.FindResource("Status_Completed");
 
             RegisterPatientCommand = new RelayCommand<object>(RegisterPatient);
 
@@ -45,8 +39,8 @@ namespace Clinic.ViewModels.Doctor
             if (obj is not string fullName || string.IsNullOrWhiteSpace(fullName))
             {
                 MessageBox.Show(
-                    "Введіть повне ім’я пацієнта.",
-                    "Помилка",
+                    (string)Application.Current.FindResource("Msg_EnterPatientName"),
+                    (string)Application.Current.FindResource("Title_Error"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return;
@@ -88,7 +82,7 @@ namespace Clinic.ViewModels.Doctor
                                 PatientName = reader.GetString("PatientName"),
                                 AppointmentDate = reader.GetDateTime("AppointmentDate"),
                                 Status = reader.IsDBNull("Status")
-                                                    ? _statusExpected
+                                                    ? AppointmentStatuses.Expected
                                                     : reader.GetString("Status"),
                                 Notes = reader.IsDBNull("Notes")
                                                     ? string.Empty
@@ -100,9 +94,9 @@ namespace Clinic.ViewModels.Doctor
 
                 var today = DateTime.Today;
                 foreach (var ap in appointments
-                             .Where(a => a.AppointmentDate.Date < today && a.Status == _statusExpected))
+                             .Where(a => a.AppointmentDate.Date < today && a.Status == AppointmentStatuses.Expected))
                 {
-                    ap.Status = _statusNoShow;
+                    ap.Status = AppointmentStatuses.NoShow;
                     using var upd = new MySqlCommand(
                         "UPDATE Appointments SET Status = @status WHERE AppointmentID = @id",
                         conn);

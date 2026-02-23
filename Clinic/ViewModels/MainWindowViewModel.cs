@@ -44,19 +44,19 @@ namespace Clinic.ViewModels
             {
                 var docVM = new DoctorAppointmentsViewModel(LinkedId);
 
-                MenuItems.Add(new MenuItem("Прийоми", docVM));
-                MenuItems.Add(new MenuItem("Запис на прийом", new RegisterPatientViewModel(LinkedId, "Doctor")));
-                MenuItems.Add(new MenuItem("Профіль", new ProfileViewModel(LinkedId, "Doctor")));
+                MenuItems.Add(new MenuItem((string)Application.Current.FindResource("Menu_Appointments"), docVM));
+                MenuItems.Add(new MenuItem((string)Application.Current.FindResource("Menu_RegisterPatient"), new RegisterPatientViewModel(LinkedId, "Doctor")));
+                MenuItems.Add(new MenuItem((string)Application.Current.FindResource("Menu_Profile"), new ProfileViewModel(LinkedId, "Doctor")));
             }
             else if (Role == "Receptionist")
             {
-                MenuItems.Add(new MenuItem("Керування прийомами", new AppointmentManagementViewModel(LinkedId)));
-                MenuItems.Add(new MenuItem("Запис на прийом", new RegisterPatientViewModel(LinkedId, "Receptionist")));
-                MenuItems.Add(new MenuItem("Профіль", new ProfileViewModel(LinkedId, "Receptionist")));
+                MenuItems.Add(new MenuItem((string)Application.Current.FindResource("Menu_ManageAppointments"), new AppointmentManagementViewModel(LinkedId)));
+                MenuItems.Add(new MenuItem((string)Application.Current.FindResource("Menu_RegisterPatient"), new RegisterPatientViewModel(LinkedId, "Receptionist")));
+                MenuItems.Add(new MenuItem((string)Application.Current.FindResource("Menu_Profile"), new ProfileViewModel(LinkedId, "Receptionist")));
             }
             else if (Role == "Admin")
             {
-                MenuItems.Add(new MenuItem("Керування користувачами", new AdminUserManagementViewModel(username)));
+                MenuItems.Add(new MenuItem((string)Application.Current.FindResource("Menu_ManageUsers"), new AdminUserManagementViewModel(username)));
             }
 
             if (MenuItems.Count > 0)

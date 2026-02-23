@@ -28,14 +28,13 @@
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
-        <!-- Подсветка строк -->
+        <!-- Row highlighting — uses language-neutral bool properties -->
         <Style TargetType="DataGridRow">
             <Style.Triggers>
-                <!-- Используем StaticResource здесь -->
-                <DataTrigger Binding="{Binding Status}" Value="{StaticResource Status_Completed}">
+                <DataTrigger Binding="{Binding IsCompleted}" Value="True">
                     <Setter Property="Background" Value="LightGray" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Status}" Value="{StaticResource Status_NoShow}">
+                <DataTrigger Binding="{Binding IsNoShow}" Value="True">
                     <Setter Property="Background" Value="LightGray" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsNearestToday}" Value="true">
@@ -83,7 +82,7 @@
                                             Binding="{Binding AppointmentDate, StringFormat='HH:mm'}"
                                             Width="1.5*"/>
                         <DataGridTextColumn Header="{StaticResource Column_Status}"
-                                            Binding="{Binding Status}"
+                                            Binding="{Binding StatusDisplay}"
                                             Width="1.5*"/>
                         <DataGridTextColumn Header="{StaticResource Column_Notes}"
                                             Binding="{Binding Notes}"
@@ -128,7 +127,7 @@
                                             Binding="{Binding AppointmentDate, StringFormat='HH:mm'}"
                                             Width="1.5*"/>
                         <DataGridTextColumn Header="{StaticResource Column_Status}"
-                                            Binding="{Binding Status}"
+                                            Binding="{Binding StatusDisplay}"
                                             Width="1.5*"/>
                         <DataGridTextColumn Header="{StaticResource Column_Notes}"
                                             Binding="{Binding Notes}"
@@ -173,7 +172,7 @@
                                             Binding="{Binding AppointmentDate, StringFormat='HH:mm'}"
                                             Width="1.5*"/>
                         <DataGridTextColumn Header="{StaticResource Column_Status}"
-                                            Binding="{Binding Status}"
+                                            Binding="{Binding StatusDisplay}"
                                             Width="1.5*"/>
                         <DataGridTextColumn Header="{StaticResource Column_Notes}"
                                             Binding="{Binding Notes}"

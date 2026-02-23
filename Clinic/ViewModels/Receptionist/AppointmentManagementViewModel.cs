@@ -75,7 +75,7 @@ namespace Clinic.ViewModels.Receptionist
                     PatientName = reader.GetString("PatientName"),
                     AppointmentDate = reader.GetDateTime("AppointmentDate"),
                     Status = reader.IsDBNull(reader.GetOrdinal("Status"))
-                             ? (string)Application.Current.FindResource("Status_Expected")
+                             ? AppointmentStatuses.Expected
                              : reader.GetString("Status")
                 });
             }
@@ -85,10 +85,7 @@ namespace Clinic.ViewModels.Receptionist
         {
             if (appt == null) return;
 
-            var completed = (string)Application.Current.FindResource("Status_Completed");
-            var noShow = (string)Application.Current.FindResource("Status_NoShow");
-
-            if (appt.Status == completed || appt.Status == noShow)
+            if (appt.IsCompleted || appt.IsNoShow)
             {
                 MessageBox.Show(
                     (string)Application.Current.FindResource("Msg_AlreadyHandled"),
@@ -103,7 +100,7 @@ namespace Clinic.ViewModels.Receptionist
 
             var cmd = new MySqlCommand(
                 "UPDATE Appointments SET Status = @status WHERE AppointmentID = @id", conn);
-            cmd.Parameters.AddWithValue("@status", noShow);
+            cmd.Parameters.AddWithValue("@status", AppointmentStatuses.NoShow);
             cmd.Parameters.AddWithValue("@id", appt.AppointmentID);
             cmd.ExecuteNonQuery();
 

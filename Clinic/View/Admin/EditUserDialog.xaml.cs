@@ -34,9 +34,9 @@ namespace Clinic.View.Admin
             // Прив’язуємо стартове значення в випадку редагування
             if (_isEdit)
             {
-                Title = "Редагування користувача";
+                Title = (string)Application.Current.FindResource("EditUser_Title");
                 UsernameBox.Text = _user.Username;
-                PasswordLabel.Text = "Новий пароль:";
+                PasswordLabel.Text = (string)Application.Current.FindResource("Label_NewPassword");
                 LinkedID = _user.LinkedID;
 
                 // Встановити роль
@@ -52,8 +52,8 @@ namespace Clinic.View.Admin
             }
             else
             {
-                Title = "Додавання користувача";
-                PasswordLabel.Text = "Пароль:";
+                Title = (string)Application.Current.FindResource("AddUser_Title");
+                PasswordLabel.Text = (string)Application.Current.FindResource("Label_PasswordColon");
             }
 
             // За замовчуванням перша роль
@@ -100,22 +100,22 @@ namespace Clinic.View.Admin
             // Базова валідація
             if (string.IsNullOrWhiteSpace(Username))
             {
-                MessageBox.Show("Введіть логін."); return;
+                MessageBox.Show((string)Application.Current.FindResource("Msg_EnterLogin")); return;
             }
             if (string.IsNullOrWhiteSpace(Role))
             {
-                MessageBox.Show("Оберіть роль."); return;
+                MessageBox.Show((string)Application.Current.FindResource("Msg_SelectRole")); return;
             }
             if (string.IsNullOrWhiteSpace(LastName) ||
                 string.IsNullOrWhiteSpace(FirstName))
             {
-                MessageBox.Show("Введіть прізвище та ім’я."); return;
+                MessageBox.Show((string)Application.Current.FindResource("Msg_EnterLastFirstName")); return;
             }
             // Перевірка заповнення маски: "+380 (xx) xxx-xxxx"
             if (PhoneBox.MaskedTextProvider != null &&
                 !PhoneBox.MaskedTextProvider.MaskCompleted)
             {
-                MessageBox.Show("Телефон має бути у форматі +380 (xx) xxx-xxxx.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_InvalidPhoneFormatMasked"));
                 return;
             }
 

@@ -19,16 +19,16 @@
                       MouseDoubleClick="UserGrid_MouseDoubleClick">
 
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Логін" Binding="{Binding Username}" Width="*"/>
-                <DataGridTextColumn Header="Роль" Binding="{Binding Role}" Width="*"/>
-                <DataGridTextColumn Header="ПІБ профілю" Binding="{Binding FullName}" Width="2*" />
-                <DataGridTextColumn Header="Створено" Binding="{Binding CreatedAt}" Width="*"/>
+                <DataGridTextColumn Header="{DynamicResource Column_Login}" Binding="{Binding Username}" Width="*"/>
+                <DataGridTextColumn Header="{DynamicResource Column_Role}" Binding="{Binding Role}" Width="*"/>
+                <DataGridTextColumn Header="{DynamicResource Column_ProfileName}" Binding="{Binding FullName}" Width="2*" />
+                <DataGridTextColumn Header="{DynamicResource Column_Created}" Binding="{Binding CreatedAt}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
-            <Button Content="Додати" Click="AddUser_Click" Width="100"/>
-            <Button Content="Видалити" Click="DeleteButton_Click" Width="100"/>
+            <Button Content="{DynamicResource Btn_Add}" Click="AddUser_Click" Width="100"/>
+            <Button Content="{DynamicResource Btn_Delete}" Click="DeleteButton_Click" Width="100"/>
 
         </StackPanel>
     </Grid>

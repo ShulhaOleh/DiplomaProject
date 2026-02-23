@@ -84,7 +84,7 @@ namespace Clinic.View.Doctor
             readerA.Close();
             if (!hasAllergy)
             {
-                AllergyList.Items.Add("(немає записів)");
+                AllergyList.Items.Add((string)Application.Current.FindResource("NoRecords"));
             }
 
             Debug.WriteLine($"[INFO] Loading diseases for cardId = {_cardId}");
@@ -105,7 +105,7 @@ namespace Clinic.View.Doctor
             readerD.Close();
             if (!hasDisease)
             {
-                DiseaseList.Items.Add("(немає записів)");
+                DiseaseList.Items.Add((string)Application.Current.FindResource("NoRecords"));
             }
         }
 
@@ -291,9 +291,9 @@ namespace Clinic.View.Doctor
             _appointment.Notes = NotesBox.Text;
 
             if (!NotesBox.IsEnabled)
-                _appointment.Status = "Пацієнт не з’явився";
+                _appointment.Status = AppointmentStatuses.NoShow;
             else
-                _appointment.Status = "Прийом завершено";
+                _appointment.Status = AppointmentStatuses.Completed;
 
             SaveBloodType();
 
@@ -304,7 +304,7 @@ namespace Clinic.View.Doctor
         private void NoShow_Click(object sender, RoutedEventArgs e)
         {
             _appointment.Notes = NotesBox.Text;
-            _appointment.Status = "Пацієнт не з’явився";
+            _appointment.Status = AppointmentStatuses.NoShow;
             DialogResult = true;
             Close();
         }
@@ -312,7 +312,7 @@ namespace Clinic.View.Doctor
         private void EnableEditing_Click(object sender, RoutedEventArgs e)
         {
             EnableEditing();
-            _appointment.Status = "Прийом завершено";
+            _appointment.Status = AppointmentStatuses.Completed;
         }
     }
 

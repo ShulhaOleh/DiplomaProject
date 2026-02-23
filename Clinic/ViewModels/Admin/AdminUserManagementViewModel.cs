@@ -94,7 +94,7 @@ namespace Clinic.ViewModels.Admin
             var storedHash = authCmd.ExecuteScalar() as string;
             if (storedHash == null)
             {
-                MessageBox.Show("Адміністратора не знайдено.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_AdminNotFound"));
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace Clinic.ViewModels.Admin
 
             if (entered != storedHash)
             {
-                MessageBox.Show("Невірний пароль адміністратора.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_WrongAdminPassword"));
                 return;
             }
 
@@ -116,11 +116,11 @@ namespace Clinic.ViewModels.Admin
             {
                 delCmd.ExecuteNonQuery();
                 LoadUsers();
-                MessageBox.Show("Користувача успішно видалено.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_UserDeleted"));
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show($"Помилка при видаленні: {ex.Message}");
+                MessageBox.Show($"{(string)Application.Current.FindResource("Msg_DeleteError")} {ex.Message}");
             }
         }
 

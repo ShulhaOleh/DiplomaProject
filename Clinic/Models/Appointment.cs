@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 
 public class Appointment
 {
@@ -12,4 +13,19 @@ public class Appointment
     public string BloodType { get; set; }
     // Highlight nearest today's appointment
     public bool IsNearestToday { get; set; } = false;
+
+    public bool IsCompleted => Status == Clinic.Models.AppointmentStatuses.Completed;
+    public bool IsNoShow    => Status == Clinic.Models.AppointmentStatuses.NoShow;
+
+    public string StatusDisplay
+    {
+        get
+        {
+            if (Status == Clinic.Models.AppointmentStatuses.Completed)
+                return (string)Application.Current.FindResource("Status_Completed");
+            if (Status == Clinic.Models.AppointmentStatuses.NoShow)
+                return (string)Application.Current.FindResource("Status_NoShow");
+            return (string)Application.Current.FindResource("Status_Expected");
+        }
+    }
 }

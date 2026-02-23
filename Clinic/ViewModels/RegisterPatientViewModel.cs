@@ -117,19 +117,20 @@ namespace Clinic.ViewModels
             int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
             if (exists > 0)
             {
-                MessageBox.Show("Пацієнт уже записаний на цей день до цього лікаря.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_AlreadyBooked"));
                 return;
             }
 
             var cmdInsert = new MySqlCommand(@"
-                INSERT INTO Appointments 
+                INSERT INTO Appointments
                     (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, ReceptionistID, Notes)
-                VALUES 
-                    (@doc, @pat, @date, 'Очікується', @card, @rec, @note)", conn);
+                VALUES
+                    (@doc, @pat, @date, @status, @card, @rec, @note)", conn);
 
             cmdInsert.Parameters.AddWithValue("@doc", doctor.DoctorID);
             cmdInsert.Parameters.AddWithValue("@pat", patientId);
             cmdInsert.Parameters.AddWithValue("@date", selectedDateTime);
+            cmdInsert.Parameters.AddWithValue("@status", AppointmentStatuses.Expected);
             cmdInsert.Parameters.AddWithValue("@card", cardId);
             cmdInsert.Parameters.AddWithValue("@rec", _userId);
             cmdInsert.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
@@ -158,19 +159,20 @@ namespace Clinic.ViewModels
             int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
             if (exists > 0)
             {
-                MessageBox.Show("Пацієнт уже записаний на цей день.");
+                MessageBox.Show((string)Application.Current.FindResource("Msg_AlreadyBookedDoctor"));
                 return;
             }
 
             var cmd = new MySqlCommand(@"
-                INSERT INTO Appointments 
+                INSERT INTO Appointments
                     (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, Notes)
-                VALUES 
-                    (@doc, @pat, @date, 'Очікується', @card, @note)", conn);
+                VALUES
+                    (@doc, @pat, @date, @status, @card, @note)", conn);
 
             cmd.Parameters.AddWithValue("@doc", _userId);
             cmd.Parameters.AddWithValue("@pat", patientId);
             cmd.Parameters.AddWithValue("@date", selectedDateTime);
+            cmd.Parameters.AddWithValue("@status", AppointmentStatuses.Expected);
             cmd.Parameters.AddWithValue("@card", cardId);
             cmd.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
 

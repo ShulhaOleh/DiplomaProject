@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace Clinic.Models
 {
@@ -12,9 +13,9 @@ namespace Clinic.Models
         {
             get
             {
-                if (IsBreak) return "Обід";
-                if (IsBusy) return "Зайнято";
-                if (IsFree) return "Вільно";
+                if (IsBreak) return (string)Application.Current.FindResource("ScheduleCell_Break");
+                if (IsBusy) return (string)Application.Current.FindResource("ScheduleCell_Busy");
+                if (IsFree) return (string)Application.Current.FindResource("ScheduleCell_Free");
                 return "";
             }
         }

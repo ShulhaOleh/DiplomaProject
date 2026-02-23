@@ -27,14 +27,20 @@ namespace Clinic.ViewModels
             {
                 if (role == "Doctor")
                 {
-                    MessageBox.Show("Пацієнта не знайдено в базі. Лікар може записувати лише існуючих пацієнтів.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(
+                        (string)Application.Current.FindResource("Msg_PatientNotFoundDoctor"),
+                        (string)Application.Current.FindResource("Title_Error"),
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                var nameParts = patientFullName.Split(' ');
+                var nameParts = patientFullName.Split(" ");
                 if (nameParts.Length < 2)
                 {
-                    MessageBox.Show("Введіть повне ім’я пацієнта.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(
+                        (string)Application.Current.FindResource("Msg_EnterPatientName"),
+                        (string)Application.Current.FindResource("Title_Error"),
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -51,15 +57,19 @@ namespace Clinic.ViewModels
             }
 
             var insertAppointment = new MySqlCommand(
-                "INSERT INTO Appointments (PatientID, DoctorID, AppointmentDate, Status, Notes) VALUES (@pid, @docId, @date, 'Очікується', '')", conn);
+                "INSERT INTO Appointments (PatientID, DoctorID, AppointmentDate, Status, Notes) VALUES (@pid, @docId, @date, @status, '')", conn);
             insertAppointment.Parameters.AddWithValue("@pid", patientId);
             insertAppointment.Parameters.AddWithValue("@docId", doctorId);
             insertAppointment.Parameters.AddWithValue("@date", appointmentDate);
+            insertAppointment.Parameters.AddWithValue("@status", Clinic.Models.AppointmentStatuses.Expected);
             insertAppointment.ExecuteNonQuery();
 
             NotifyAppointmentAdded();
 
-            MessageBox.Show("Пацієнта успішно записано на прийом.", "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(
+                (string)Application.Current.FindResource("Msg_AppointmentRegistered"),
+                (string)Application.Current.FindResource("Title_Done"),
+                MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

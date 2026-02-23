@@ -47,4 +47,104 @@
     
     <sys:String x:Key="Sys_Admin">System admin</sys:String>
 
+    <!-- Buttons (common) -->
+    <sys:String x:Key="Btn_Add">Add</sys:String>
+    <sys:String x:Key="Btn_Remove">Remove</sys:String>
+    <sys:String x:Key="Btn_Delete">Delete</sys:String>
+    <sys:String x:Key="Btn_Save">Save</sys:String>
+    <sys:String x:Key="Btn_Cancel">Cancel</sys:String>
+    <sys:String x:Key="Btn_Confirm">Confirm</sys:String>
+    <sys:String x:Key="Btn_PatientNoShow">Patient no-show</sys:String>
+    <sys:String x:Key="Btn_StartAppointment">Start appointment</sys:String>
+    <sys:String x:Key="Btn_SaveAndClose">Save and close</sys:String>
+
+    <!-- Window titles -->
+    <sys:String x:Key="CompleteAppointment_Title">Appointment completion</sys:String>
+    <sys:String x:Key="SelectDoctor_Title">Schedule appointment</sys:String>
+    <sys:String x:Key="EditUser_Title">Edit user</sys:String>
+    <sys:String x:Key="ConfirmPassword_Title">Confirmation</sys:String>
+
+    <!-- Labels / GroupBox headers -->
+    <sys:String x:Key="Group_Patient">Patient</sys:String>
+    <sys:String x:Key="Label_CardNumber">Card number:</sys:String>
+    <sys:String x:Key="Label_BloodType">Blood type:</sys:String>
+    <sys:String x:Key="Group_Allergies">Allergies</sys:String>
+    <sys:String x:Key="Group_ChronicDiseases">Chronic diseases</sys:String>
+    <sys:String x:Key="Label_AppointmentNotes">Appointment notes:</sys:String>
+    <sys:String x:Key="Label_Patient">Patient:</sys:String>
+    <sys:String x:Key="Label_Date">Date:</sys:String>
+    <sys:String x:Key="Label_Specialty">Specialty:</sys:String>
+    <sys:String x:Key="Label_Note">Note:</sys:String>
+    <sys:String x:Key="Label_Time">Time</sys:String>
+    <sys:String x:Key="Label_Login">Login:</sys:String>
+    <sys:String x:Key="Label_Role">Role:</sys:String>
+    <sys:String x:Key="Label_LastName">Last name:</sys:String>
+    <sys:String x:Key="Label_FirstName">First name:</sys:String>
+    <sys:String x:Key="Label_FathersName">Father's name:</sys:String>
+    <sys:String x:Key="Label_EnterAdminPassword">Enter administrator password:</sys:String>
+    <sys:String x:Key="NoRecords">(no records)</sys:String>
+
+    <!-- DataGrid columns -->
+    <sys:String x:Key="Column_Login">Login</sys:String>
+    <sys:String x:Key="Column_Role">Role</sys:String>
+    <sys:String x:Key="Column_ProfileName">Full name</sys:String>
+    <sys:String x:Key="Column_Created">Created</sys:String>
+    <sys:String x:Key="Column_FullNameShort">Full name</sys:String>
+    <sys:String x:Key="Column_PhoneNumber">Phone number</sys:String>
+    <sys:String x:Key="Column_DateOfBirth">Date of birth</sys:String>
+
+    <!-- Main menu items -->
+    <sys:String x:Key="Menu_Appointments">Appointments</sys:String>
+    <sys:String x:Key="Menu_RegisterPatient">Register patient</sys:String>
+    <sys:String x:Key="Menu_Profile">Profile</sys:String>
+    <sys:String x:Key="Menu_ManageAppointments">Manage appointments</sys:String>
+    <sys:String x:Key="Menu_ManageUsers">Manage users</sys:String>
+
+    <!-- MessageBox titles -->
+    <sys:String x:Key="Title_Error">Error</sys:String>
+    <sys:String x:Key="Title_Success">Success</sys:String>
+    <sys:String x:Key="Title_InvalidFormat">Invalid format</sys:String>
+
+    <!-- MessageBox messages -->
+    <sys:String x:Key="Msg_EnterPatientName">Enter patient's full name.</sys:String>
+    <sys:String x:Key="Msg_AdminNotFound">Administrator not found.</sys:String>
+    <sys:String x:Key="Msg_WrongAdminPassword">Incorrect administrator password.</sys:String>
+    <sys:String x:Key="Msg_UserDeleted">User deleted successfully.</sys:String>
+    <sys:String x:Key="Msg_DeleteError">Error while deleting:</sys:String>
+    <sys:String x:Key="Msg_PatientNotFoundDoctor">Patient not found. Doctors can only register existing patients.</sys:String>
+    <sys:String x:Key="Msg_AppointmentRegistered">Patient registered for appointment successfully.</sys:String>
+    <sys:String x:Key="Msg_AlreadyBooked">Patient is already registered for this day with this doctor.</sys:String>
+    <sys:String x:Key="Msg_AlreadyBookedDoctor">Patient is already registered for this day.</sys:String>
+    <sys:String x:Key="Msg_PhoneExists">A user with this phone number already exists. Enter a different number.</sys:String>
+    <sys:String x:Key="Msg_InvalidPhoneFormat">Phone number must be in format +380XXXXXXXXX.</sys:String>
+    <sys:String x:Key="Msg_PhoneUpdated">Phone number updated successfully.</sys:String>
+    <sys:String x:Key="Msg_PatientNotPassed">No patient provided.</sys:String>
+    <sys:String x:Key="Msg_SelectTimeSlot">Please select a free time slot.</sys:String>
+    <sys:String x:Key="Msg_TimeSlotBusy">This time slot is busy or on break.</sys:String>
+    <sys:String x:Key="Msg_DoctorSelectedFmt">Doctor selected: {0}, time: {1}</sys:String>
+    <sys:String x:Key="Msg_AppointmentBookedFmt">Patient {0} booked for {1} with {2}.</sys:String>
+
+    <!-- ScheduleCell display texts -->
+    <sys:String x:Key="ScheduleCell_Break">Lunch</sys:String>
+    <sys:String x:Key="ScheduleCell_Busy">Busy</sys:String>
+    <sys:String x:Key="ScheduleCell_Free">Free</sys:String>
+
+    <!-- EditUserDialog -->
+    <sys:String x:Key="AddUser_Title">Add user</sys:String>
+    <sys:String x:Key="Label_NewPassword">New password:</sys:String>
+    <sys:String x:Key="Label_PasswordColon">Password:</sys:String>
+    <sys:String x:Key="Msg_EnterLogin">Enter login.</sys:String>
+    <sys:String x:Key="Msg_SelectRole">Select a role.</sys:String>
+    <sys:String x:Key="Msg_EnterLastFirstName">Enter last name and first name.</sys:String>
+    <sys:String x:Key="Msg_InvalidPhoneFormatMasked">Phone must be in format +380 (xx) xxx-xxxx.</sys:String>
+
+    <!-- MainWindow / Login -->
+    <sys:String x:Key="Menu_Logout">Log out</sys:String>
+    <sys:String x:Key="Menu_Exit">Exit</sys:String>
+    <sys:String x:Key="Msg_ConnectionError">Connection error:</sys:String>
+
+    <!-- Window titles -->
+    <sys:String x:Key="MainWindow_Title">Clinic</sys:String>
+    <sys:String x:Key="Login_Title">Login</sys:String>
+
 </ResourceDictionary>

@@ -24,12 +24,10 @@
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Status}"
-                           Value="{StaticResource Status_NoShow}">
+                            <DataTrigger Binding="{Binding IsNoShow}" Value="True">
                                 <Setter Property="Background" Value="LightGray"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Status}"
-                           Value="{StaticResource Status_Completed}">
+                            <DataTrigger Binding="{Binding IsCompleted}" Value="True">
                                 <Setter Property="Background" Value="LightGray"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -45,9 +43,9 @@
                               Header="{DynamicResource Column_Date}"
                               Binding="{Binding AppointmentDate, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
                               Width="*" />
-                    <DataGridTextColumn 
+                    <DataGridTextColumn
                               Header="{DynamicResource Column_Status}"
-                              Binding="{Binding Status}"
+                              Binding="{Binding StatusDisplay}"
                               Width="*" />
                 </DataGrid.Columns>
             </DataGrid>

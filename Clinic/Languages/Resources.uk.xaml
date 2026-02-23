@@ -46,6 +46,106 @@
     <sys:String x:Key="Msg_AlreadyHandled">Цей прийом уже завершено або позначено як 'не з’явився'.</sys:String>
 
 
-    <sys:String x:Key="Sys_Admin">Системнй адміністратор</sys:String>
+    <sys:String x:Key="Sys_Admin">Системний адміністратор</sys:String>
+
+    <!-- Buttons (common) -->
+    <sys:String x:Key="Btn_Add">Додати</sys:String>
+    <sys:String x:Key="Btn_Remove">Видалити</sys:String>
+    <sys:String x:Key="Btn_Delete">Видалити</sys:String>
+    <sys:String x:Key="Btn_Save">Зберегти</sys:String>
+    <sys:String x:Key="Btn_Cancel">Скасувати</sys:String>
+    <sys:String x:Key="Btn_Confirm">Підтвердити</sys:String>
+    <sys:String x:Key="Btn_PatientNoShow">Пацієнт не з'явився</sys:String>
+    <sys:String x:Key="Btn_StartAppointment">Розпочати прийом</sys:String>
+    <sys:String x:Key="Btn_SaveAndClose">Зберегти та закрити</sys:String>
+
+    <!-- Window titles -->
+    <sys:String x:Key="CompleteAppointment_Title">Завершення прийому</sys:String>
+    <sys:String x:Key="SelectDoctor_Title">Вибір прийому</sys:String>
+    <sys:String x:Key="EditUser_Title">Редагування користувача</sys:String>
+    <sys:String x:Key="ConfirmPassword_Title">Підтвердження</sys:String>
+
+    <!-- Labels / GroupBox headers -->
+    <sys:String x:Key="Group_Patient">Пацієнт</sys:String>
+    <sys:String x:Key="Label_CardNumber">Номер картки:</sys:String>
+    <sys:String x:Key="Label_BloodType">Група крові:</sys:String>
+    <sys:String x:Key="Group_Allergies">Алергії</sys:String>
+    <sys:String x:Key="Group_ChronicDiseases">Хронічні хвороби</sys:String>
+    <sys:String x:Key="Label_AppointmentNotes">Нотатки до прийому:</sys:String>
+    <sys:String x:Key="Label_Patient">Пацієнт:</sys:String>
+    <sys:String x:Key="Label_Date">Дата:</sys:String>
+    <sys:String x:Key="Label_Specialty">Спеціальність:</sys:String>
+    <sys:String x:Key="Label_Note">Примітка:</sys:String>
+    <sys:String x:Key="Label_Time">Час</sys:String>
+    <sys:String x:Key="Label_Login">Логін:</sys:String>
+    <sys:String x:Key="Label_Role">Роль:</sys:String>
+    <sys:String x:Key="Label_LastName">Прізвище:</sys:String>
+    <sys:String x:Key="Label_FirstName">Ім'я:</sys:String>
+    <sys:String x:Key="Label_FathersName">По батькові:</sys:String>
+    <sys:String x:Key="Label_EnterAdminPassword">Введіть пароль адміністратора:</sys:String>
+    <sys:String x:Key="NoRecords">(немає записів)</sys:String>
+
+    <!-- DataGrid columns -->
+    <sys:String x:Key="Column_Login">Логін</sys:String>
+    <sys:String x:Key="Column_Role">Роль</sys:String>
+    <sys:String x:Key="Column_ProfileName">ПІБ профілю</sys:String>
+    <sys:String x:Key="Column_Created">Створено</sys:String>
+    <sys:String x:Key="Column_FullNameShort">ПІ</sys:String>
+    <sys:String x:Key="Column_PhoneNumber">Номер телефону</sys:String>
+    <sys:String x:Key="Column_DateOfBirth">Дата народження</sys:String>
+
+    <!-- Main menu items -->
+    <sys:String x:Key="Menu_Appointments">Прийоми</sys:String>
+    <sys:String x:Key="Menu_RegisterPatient">Запис на прийом</sys:String>
+    <sys:String x:Key="Menu_Profile">Профіль</sys:String>
+    <sys:String x:Key="Menu_ManageAppointments">Керування прийомами</sys:String>
+    <sys:String x:Key="Menu_ManageUsers">Керування користувачами</sys:String>
+
+    <!-- MessageBox titles -->
+    <sys:String x:Key="Title_Error">Помилка</sys:String>
+    <sys:String x:Key="Title_Success">Успіх</sys:String>
+    <sys:String x:Key="Title_InvalidFormat">Невірний формат</sys:String>
+
+    <!-- MessageBox messages -->
+    <sys:String x:Key="Msg_EnterPatientName">Введіть повне ім'я пацієнта.</sys:String>
+    <sys:String x:Key="Msg_AdminNotFound">Адміністратора не знайдено.</sys:String>
+    <sys:String x:Key="Msg_WrongAdminPassword">Невірний пароль адміністратора.</sys:String>
+    <sys:String x:Key="Msg_UserDeleted">Користувача успішно видалено.</sys:String>
+    <sys:String x:Key="Msg_DeleteError">Помилка при видаленні:</sys:String>
+    <sys:String x:Key="Msg_PatientNotFoundDoctor">Пацієнта не знайдено в базі. Лікар може записувати лише існуючих пацієнтів.</sys:String>
+    <sys:String x:Key="Msg_AppointmentRegistered">Пацієнта успішно записано на прийом.</sys:String>
+    <sys:String x:Key="Msg_AlreadyBooked">Пацієнт уже записаний на цей день до цього лікаря.</sys:String>
+    <sys:String x:Key="Msg_AlreadyBookedDoctor">Пацієнт уже записаний на цей день.</sys:String>
+    <sys:String x:Key="Msg_PhoneExists">Користувач з таким номером вже існує. Введіть інший номер.</sys:String>
+    <sys:String x:Key="Msg_InvalidPhoneFormat">Номер телефону має бути у форматі +380XXXXXXXXX.</sys:String>
+    <sys:String x:Key="Msg_PhoneUpdated">Номер телефону успішно оновлено.</sys:String>
+    <sys:String x:Key="Msg_PatientNotPassed">Пацієнта не передано.</sys:String>
+    <sys:String x:Key="Msg_SelectTimeSlot">Будь ласка, оберіть вільний час прийому.</sys:String>
+    <sys:String x:Key="Msg_TimeSlotBusy">Цей час зайнятий або є перерва.</sys:String>
+    <sys:String x:Key="Msg_DoctorSelectedFmt">Обрано лікаря: {0}, час: {1}</sys:String>
+    <sys:String x:Key="Msg_AppointmentBookedFmt">Пацієнта {0} успішно записано на {1} до {2}.</sys:String>
+
+    <!-- ScheduleCell display texts -->
+    <sys:String x:Key="ScheduleCell_Break">Обід</sys:String>
+    <sys:String x:Key="ScheduleCell_Busy">Зайнято</sys:String>
+    <sys:String x:Key="ScheduleCell_Free">Вільно</sys:String>
+
+    <!-- EditUserDialog -->
+    <sys:String x:Key="AddUser_Title">Додавання користувача</sys:String>
+    <sys:String x:Key="Label_NewPassword">Новий пароль:</sys:String>
+    <sys:String x:Key="Label_PasswordColon">Пароль:</sys:String>
+    <sys:String x:Key="Msg_EnterLogin">Введіть логін.</sys:String>
+    <sys:String x:Key="Msg_SelectRole">Оберіть роль.</sys:String>
+    <sys:String x:Key="Msg_EnterLastFirstName">Введіть прізвище та ім'я.</sys:String>
+    <sys:String x:Key="Msg_InvalidPhoneFormatMasked">Телефон має бути у форматі +380 (xx) xxx-xxxx.</sys:String>
+
+    <!-- MainWindow / Login -->
+    <sys:String x:Key="Menu_Logout">Розлогінитися</sys:String>
+    <sys:String x:Key="Menu_Exit">Вийти</sys:String>
+    <sys:String x:Key="Msg_ConnectionError">Помилка підключення:</sys:String>
+
+    <!-- Window titles -->
+    <sys:String x:Key="MainWindow_Title">Поліклініка</sys:String>
+    <sys:String x:Key="Login_Title">Авторизація</sys:String>
 
 </ResourceDictionary>
