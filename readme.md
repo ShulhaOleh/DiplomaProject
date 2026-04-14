@@ -30,12 +30,12 @@ The project is intended for academic evaluation and showcases object-oriented de
 
 Before you begin, make sure the following are installed:
 
-| Tool | Version | Download |
-|------|---------|----------|
-| Windows | 10 or 11 | — |
-| Visual Studio | 2022 (any edition) | https://visualstudio.microsoft.com |
-| .NET SDK | 8.0 | https://dotnet.microsoft.com/download/dotnet/8.0 |
-| Docker Desktop | latest | https://www.docker.com/products/docker-desktop |
+| Tool | Version |
+|------|---------|
+| Windows | 10 or 11 |
+| Visual Studio | 2022 (any edition) |
+| .NET SDK | 8.0 |
+| Docker Desktop | latest |
 
 > **Note:** This is a Windows-only application (WPF). It cannot be built or run on Linux or macOS.
 

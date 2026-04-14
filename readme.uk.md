@@ -30,12 +30,12 @@
 
 Перед початком переконайтесь, що встановлено:
 
-| Інструмент | Версія | Завантаження |
-|------------|--------|--------------|
-| Windows | 10 або 11 | — |
-| Visual Studio | 2022 (будь-яке видання) | https://visualstudio.microsoft.com |
-| .NET SDK | 8.0 | https://dotnet.microsoft.com/download/dotnet/8.0 |
-| Docker Desktop | остання | https://www.docker.com/products/docker-desktop |
+| Інструмент | Версія |
+|------------|--------|
+| Windows | 10 або 11 |
+| Visual Studio | 2022 (будь-яке видання) |
+| .NET SDK | 8.0 |
+| Docker Desktop | остання |
 
 > **Примітка:** Це застосунок лише для Windows (WPF). Збірка та запуск на Linux або macOS неможливі.
 
