@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using MySql.Data.MySqlClient;
 
@@ -14,16 +14,15 @@ namespace Clinic.ViewModels
             using var conn = Clinic.DB.ClinicDB.GetConnection();
             conn.Open();
 
-            int patientId;
-            var findPatientCmd = new MySqlCommand("SELECT PatientID FROM Patients WHERE CONCAT(FirstName, ' ', LastName) = @name", conn);
-            findPatientCmd.Parameters.AddWithValue("@name", patientFullName);
-            var result = findPatientCmd.ExecuteScalar();
+            // Read phase — find patient before opening a transaction
+            var findCmd = new MySqlCommand(
+                "SELECT PatientID FROM Patients WHERE CONCAT(FirstName, ' ', LastName) = @name", conn);
+            findCmd.Parameters.AddWithValue("@name", patientFullName);
+            var existing = findCmd.ExecuteScalar();
 
-            if (result != null)
-            {
-                patientId = Convert.ToInt32(result);
-            }
-            else
+            // Validate before any writes
+            string[] nameParts = null;
+            if (existing == null)
             {
                 if (role == "Doctor")
                 {
@@ -34,7 +33,7 @@ namespace Clinic.ViewModels
                     return;
                 }
 
-                var nameParts = patientFullName.Split(" ");
+                nameParts = patientFullName.Split(" ");
                 if (nameParts.Length < 2)
                 {
                     MessageBox.Show(
@@ -43,26 +42,50 @@ namespace Clinic.ViewModels
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
-                var insertPatientCmd = new MySqlCommand(
-                    "INSERT INTO Patients (FirstName, LastName) VALUES (@fn, @ln); SELECT LAST_INSERT_ID();", conn);
-                insertPatientCmd.Parameters.AddWithValue("@fn", nameParts[0]);
-                insertPatientCmd.Parameters.AddWithValue("@ln", nameParts[1]);
-                patientId = Convert.ToInt32(insertPatientCmd.ExecuteScalar());
-
-                var insertCardCmd = new MySqlCommand(
-                    "INSERT INTO AmbulatoryCards (PatientID) VALUES (@pid)", conn);
-                insertCardCmd.Parameters.AddWithValue("@pid", patientId);
-                insertCardCmd.ExecuteNonQuery();
             }
 
-            var insertAppointment = new MySqlCommand(
-                "INSERT INTO Appointments (PatientID, DoctorID, AppointmentDate, Status, Notes) VALUES (@pid, @docId, @date, @status, '')", conn);
-            insertAppointment.Parameters.AddWithValue("@pid", patientId);
-            insertAppointment.Parameters.AddWithValue("@docId", doctorId);
-            insertAppointment.Parameters.AddWithValue("@date", appointmentDate);
-            insertAppointment.Parameters.AddWithValue("@status", Clinic.Models.AppointmentStatuses.Expected);
-            insertAppointment.ExecuteNonQuery();
+            // Write phase — all inserts in a single transaction
+            using var transaction = conn.BeginTransaction();
+            try
+            {
+                int patientId;
+
+                if (existing != null)
+                {
+                    patientId = Convert.ToInt32(existing);
+                }
+                else
+                {
+                    var insertPatient = new MySqlCommand(
+                        "INSERT INTO Patients (FirstName, LastName) VALUES (@fn, @ln); SELECT LAST_INSERT_ID();",
+                        conn, transaction);
+                    insertPatient.Parameters.AddWithValue("@fn", nameParts[0]);
+                    insertPatient.Parameters.AddWithValue("@ln", nameParts[1]);
+                    patientId = Convert.ToInt32(insertPatient.ExecuteScalar());
+
+                    var insertCard = new MySqlCommand(
+                        "INSERT INTO AmbulatoryCards (PatientID) VALUES (@pid)",
+                        conn, transaction);
+                    insertCard.Parameters.AddWithValue("@pid", patientId);
+                    insertCard.ExecuteNonQuery();
+                }
+
+                var insertAppt = new MySqlCommand(
+                    "INSERT INTO Appointments (PatientID, DoctorID, AppointmentDate, Status, Notes) VALUES (@pid, @docId, @date, @status, '')",
+                    conn, transaction);
+                insertAppt.Parameters.AddWithValue("@pid", patientId);
+                insertAppt.Parameters.AddWithValue("@docId", doctorId);
+                insertAppt.Parameters.AddWithValue("@date", appointmentDate);
+                insertAppt.Parameters.AddWithValue("@status", Clinic.Models.AppointmentStatuses.Expected);
+                insertAppt.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
 
             NotifyAppointmentAdded();
 

@@ -1,4 +1,4 @@
-﻿using Clinic.DB;
+using Clinic.DB;
 using Clinic.Models;
 using Clinic.ViewModels.Doctor;
 using MySql.Data.MySqlClient;
@@ -91,109 +91,138 @@ namespace Clinic.ViewModels
                     PatientID = reader.GetInt32("PatientID"),
                     FirstName = reader.GetString("FirstName"),
                     LastName = reader.GetString("LastName"),
-                    PhoneNumber = reader.GetString("PhoneNumber"),
-                    DateOfBirth = reader.GetDateTime("DateOfBirth")
+                    PhoneNumber = reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? "" : reader.GetString("PhoneNumber"),
+                    DateOfBirth = reader.IsDBNull(reader.GetOrdinal("DateOfBirth")) ? default : reader.GetDateTime("DateOfBirth")
                 });
             }
         }
 
+        // Receptionist overload — includes doctor selection and receptionistID
         public void RegisterAppointment(Patient patient, DateTime selectedDateTime, Clinic.Models.Doctor doctor)
         {
             if (patient == null || doctor == null) return;
 
             using var conn = ClinicDB.GetConnection();
             conn.Open();
+            using var transaction = conn.BeginTransaction();
 
-            int patientId = patient.PatientID;
-            int cardId = GetOrCreateCardId(patientId, conn);
-
-            var checkCmd = new MySqlCommand(@"
-                SELECT COUNT(*) FROM Appointments 
-                WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day", conn);
-            checkCmd.Parameters.AddWithValue("@doc", doctor.DoctorID);
-            checkCmd.Parameters.AddWithValue("@pat", patientId);
-            checkCmd.Parameters.AddWithValue("@day", selectedDateTime.Date);
-
-            int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
-            if (exists > 0)
+            try
             {
-                MessageBox.Show((string)Application.Current.FindResource("Msg_AlreadyBooked"));
-                return;
+                int patientId = patient.PatientID;
+                int cardId = GetOrCreateCardId(patientId, conn, transaction);
+
+                var checkCmd = new MySqlCommand(@"
+                    SELECT COUNT(*) FROM Appointments
+                    WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day",
+                    conn, transaction);
+                checkCmd.Parameters.AddWithValue("@doc", doctor.DoctorID);
+                checkCmd.Parameters.AddWithValue("@pat", patientId);
+                checkCmd.Parameters.AddWithValue("@day", selectedDateTime.Date);
+
+                if (Convert.ToInt32(checkCmd.ExecuteScalar()) > 0)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show((string)Application.Current.FindResource("Msg_AlreadyBooked"));
+                    return;
+                }
+
+                var cmdInsert = new MySqlCommand(@"
+                    INSERT INTO Appointments
+                        (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, ReceptionistID, Notes)
+                    VALUES
+                        (@doc, @pat, @date, @status, @card, @rec, @note)",
+                    conn, transaction);
+
+                cmdInsert.Parameters.AddWithValue("@doc", doctor.DoctorID);
+                cmdInsert.Parameters.AddWithValue("@pat", patientId);
+                cmdInsert.Parameters.AddWithValue("@date", selectedDateTime);
+                cmdInsert.Parameters.AddWithValue("@status", AppointmentStatuses.Expected);
+                cmdInsert.Parameters.AddWithValue("@card", cardId);
+                cmdInsert.Parameters.AddWithValue("@rec", _userId);
+                cmdInsert.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
+
+                cmdInsert.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
             }
 
-            var cmdInsert = new MySqlCommand(@"
-                INSERT INTO Appointments
-                    (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, ReceptionistID, Notes)
-                VALUES
-                    (@doc, @pat, @date, @status, @card, @rec, @note)", conn);
-
-            cmdInsert.Parameters.AddWithValue("@doc", doctor.DoctorID);
-            cmdInsert.Parameters.AddWithValue("@pat", patientId);
-            cmdInsert.Parameters.AddWithValue("@date", selectedDateTime);
-            cmdInsert.Parameters.AddWithValue("@status", AppointmentStatuses.Expected);
-            cmdInsert.Parameters.AddWithValue("@card", cardId);
-            cmdInsert.Parameters.AddWithValue("@rec", _userId);
-            cmdInsert.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
-
-            cmdInsert.ExecuteNonQuery();
             AppointmentService.NotifyAppointmentAdded();
         }
 
+        // Doctor overload — no doctor selection, no receptionistID
         public void RegisterAppointment(Patient patient, DateTime selectedDateTime)
         {
             if (patient == null) return;
 
             using var conn = ClinicDB.GetConnection();
             conn.Open();
+            using var transaction = conn.BeginTransaction();
 
-            int patientId = patient.PatientID;
-            int cardId = GetOrCreateCardId(patientId, conn);
-
-            var checkCmd = new MySqlCommand(@"
-                SELECT COUNT(*) FROM Appointments 
-                WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day", conn);
-            checkCmd.Parameters.AddWithValue("@doc", _userId);
-            checkCmd.Parameters.AddWithValue("@pat", patientId);
-            checkCmd.Parameters.AddWithValue("@day", selectedDateTime.Date);
-
-            int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
-            if (exists > 0)
+            try
             {
-                MessageBox.Show((string)Application.Current.FindResource("Msg_AlreadyBookedDoctor"));
-                return;
+                int patientId = patient.PatientID;
+                int cardId = GetOrCreateCardId(patientId, conn, transaction);
+
+                var checkCmd = new MySqlCommand(@"
+                    SELECT COUNT(*) FROM Appointments
+                    WHERE PatientID = @pat AND DoctorID = @doc AND DATE(AppointmentDate) = @day",
+                    conn, transaction);
+                checkCmd.Parameters.AddWithValue("@doc", _userId);
+                checkCmd.Parameters.AddWithValue("@pat", patientId);
+                checkCmd.Parameters.AddWithValue("@day", selectedDateTime.Date);
+
+                if (Convert.ToInt32(checkCmd.ExecuteScalar()) > 0)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show((string)Application.Current.FindResource("Msg_AlreadyBookedDoctor"));
+                    return;
+                }
+
+                var cmd = new MySqlCommand(@"
+                    INSERT INTO Appointments
+                        (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, Notes)
+                    VALUES
+                        (@doc, @pat, @date, @status, @card, @note)",
+                    conn, transaction);
+
+                cmd.Parameters.AddWithValue("@doc", _userId);
+                cmd.Parameters.AddWithValue("@pat", patientId);
+                cmd.Parameters.AddWithValue("@date", selectedDateTime);
+                cmd.Parameters.AddWithValue("@status", AppointmentStatuses.Expected);
+                cmd.Parameters.AddWithValue("@card", cardId);
+                cmd.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
+
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
             }
 
-            var cmd = new MySqlCommand(@"
-                INSERT INTO Appointments
-                    (DoctorID, PatientID, AppointmentDate, Status, AmbulatoryCardID, Notes)
-                VALUES
-                    (@doc, @pat, @date, @status, @card, @note)", conn);
-
-            cmd.Parameters.AddWithValue("@doc", _userId);
-            cmd.Parameters.AddWithValue("@pat", patientId);
-            cmd.Parameters.AddWithValue("@date", selectedDateTime);
-            cmd.Parameters.AddWithValue("@status", AppointmentStatuses.Expected);
-            cmd.Parameters.AddWithValue("@card", cardId);
-            cmd.Parameters.AddWithValue("@note", string.IsNullOrWhiteSpace(Note) ? "" : Note);
-
-            cmd.ExecuteNonQuery();
             AppointmentService.NotifyAppointmentAdded();
         }
 
-        private int GetOrCreateCardId(int patientId, MySqlConnection conn)
+        private int GetOrCreateCardId(int patientId, MySqlConnection conn, MySqlTransaction transaction)
         {
-            using var cmdCard = new MySqlCommand("SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid", conn);
+            using var cmdCard = new MySqlCommand(
+                "SELECT AmbulatoryCardID FROM AmbulatoryCards WHERE PatientID = @pid",
+                conn, transaction);
             cmdCard.Parameters.AddWithValue("@pid", patientId);
             var result = cmdCard.ExecuteScalar();
 
             if (result != null)
-            {
                 return Convert.ToInt32(result);
-            }
 
             var insertCardCmd = new MySqlCommand(@"
-                INSERT INTO AmbulatoryCards (PatientID, CreationDate, CardNumber) 
-                VALUES (@pid, NOW(), UUID()); SELECT LAST_INSERT_ID();", conn);
+                INSERT INTO AmbulatoryCards (PatientID, CreationDate, CardNumber)
+                VALUES (@pid, NOW(), UUID()); SELECT LAST_INSERT_ID();",
+                conn, transaction);
             insertCardCmd.Parameters.AddWithValue("@pid", patientId);
             return Convert.ToInt32(insertCardCmd.ExecuteScalar());
         }
