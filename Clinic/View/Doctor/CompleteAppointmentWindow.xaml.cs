@@ -44,7 +44,7 @@ namespace Clinic.View.Doctor
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
-                CardNumberText.Text = reader.GetString("CardNumber");
+                CardNumberText.Text = reader.IsDBNull(reader.GetOrdinal("CardNumber")) ? "" : reader.GetString("CardNumber");
                 PatientNameText.Text = reader.GetString("FullName");
                 _appointment.BloodType = reader.IsDBNull(reader.GetOrdinal("BloodType"))
                     ? ""
