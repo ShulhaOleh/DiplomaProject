@@ -20,7 +20,7 @@
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="{DynamicResource Column_Login}" Binding="{Binding Username}" Width="*"/>
-                <DataGridTextColumn Header="{DynamicResource Column_Role}" Binding="{Binding Role}" Width="*"/>
+                <DataGridTextColumn Header="{DynamicResource Column_Role}" Binding="{Binding RoleDisplay}" Width="*"/>
                 <DataGridTextColumn Header="{DynamicResource Column_ProfileName}" Binding="{Binding FullName}" Width="2*" />
                 <DataGridTextColumn Header="{DynamicResource Column_Created}" Binding="{Binding CreatedAt}" Width="*"/>
             </DataGrid.Columns>

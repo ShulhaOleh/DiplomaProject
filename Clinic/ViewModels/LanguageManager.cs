@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Clinic.ViewModels
@@ -20,7 +21,20 @@ namespace Clinic.ViewModels
             return Properties.Settings.Default.AppLanguage;
         }
 
-
+        /// <summary>
+        /// Returns localized specialty name by SpecialtyID using resource keys.
+        /// Falls back to the provided DB name if no resource key is found.
+        /// </summary>
+        public static string GetSpecialtyName(int specialtyId, string fallbackName)
+        {
+            var key = $"Specialty_{specialtyId}";
+            try
+            {
+                if (Application.Current.FindResource(key) is string localized)
+                    return localized;
+            }
+            catch (ResourceReferenceKeyNotFoundException) { }
+            return fallbackName;
+        }
     }
-
 }

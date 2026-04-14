@@ -97,16 +97,18 @@ namespace Clinic.View.Receptionist
             using var conn = ClinicDB.GetConnection();
             conn.Open();
 
-            var cmd = new MySqlCommand("SELECT * FROM Specialties", conn);
+            var cmd = new MySqlCommand("SELECT SpecialtyID, Name FROM Specialties", conn);
             using var reader = cmd.ExecuteReader();
 
             var specialties = new List<dynamic>();
             while (reader.Read())
             {
+                var id = reader.GetInt32("SpecialtyID");
+                var dbName = reader.GetString("Name");
                 specialties.Add(new
                 {
-                    SpecialtyID = reader.GetInt32("SpecialtyID"),
-                    Name = reader.GetString("Name")
+                    SpecialtyID = id,
+                    Name = LanguageManager.GetSpecialtyName(id, dbName)
                 });
             }
 

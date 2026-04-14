@@ -92,7 +92,7 @@ CREATE TABLE Appointments (
     ReceptionistID INT,
     AmbulatoryCardID INT NOT NULL,
     AppointmentDate DATETIME NOT NULL,
-    Status ENUM('Прийом завершено', 'Пацієнт не з’явився', 'Очікується') DEFAULT 'Очікується',
+    Status ENUM(‘Completed’, ‘NoShow’, ‘Expected’) DEFAULT ‘Expected’,
     Notes TEXT,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
     FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID),

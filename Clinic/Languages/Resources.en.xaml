@@ -147,4 +147,14 @@
     <sys:String x:Key="MainWindow_Title">Clinic</sys:String>
     <sys:String x:Key="Login_Title">Login</sys:String>
 
+    <!-- Specialty display names (by SpecialtyID) -->
+    <sys:String x:Key="Specialty_1">ENT</sys:String>
+    <sys:String x:Key="Specialty_2">Gynecologist</sys:String>
+    <sys:String x:Key="Specialty_3">Surgeon</sys:String>
+
+    <!-- Role display names -->
+    <sys:String x:Key="Role_Doctor">Doctor</sys:String>
+    <sys:String x:Key="Role_Receptionist">Receptionist</sys:String>
+    <sys:String x:Key="Role_Admin">Administrator</sys:String>
+
 </ResourceDictionary>

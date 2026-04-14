@@ -13,12 +13,6 @@ Clinic/
 │   │   ├── ClinicDB.cs
 │   │   ├── DBHelper.cs
 │   │   └── EnvLoader.cs
-│   ├── DBs
-│   │   ├── 00-init.sql
-│   │   ├── 01-Clinic.sql
-│   │   ├── 02-ClinicAuth.sql
-│   │   ├── 03-ClinicFill.sql
-│   │   └── 04-ClinicAuthFill.sql
 │   ├── Langs
 │   │   └── PublishProfiles
 │   │       ├── FolderProfile.pubxml
@@ -98,9 +92,7 @@ Clinic/
 │   ├── fix_encoding.bat
 │   ├── fix_encoding.ps1
 │   ├── generate_structure.bat
-│   ├── generate_structure.ps1
-│   └── setup.ps1
-├── .env
+│   └── generate_structure.ps1
 ├── .env.example
 ├── docker-compose.yml
 ├── LICENSE

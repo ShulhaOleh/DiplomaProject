@@ -158,10 +158,10 @@ namespace Clinic.View.Admin
         {
             var table = Role == "Doctor" ? "Doctors" : "Receptionist";
             var columns = Role == "Doctor"
-                ? "LastName, FirstName, FathersName, PhoneNumber, DateOfBirth, Specialty, BreakHour"
+                ? "LastName, FirstName, FathersName, PhoneNumber, DateOfBirth, SpecialtyID, BreakHour"
                 : "LastName, FirstName, FathersName, PhoneNumber";
             var values = Role == "Doctor"
-                ? "@last, @first, @father, @phone, CURDATE(), 'ЛОР', '13:00:00'"
+                ? "@last, @first, @father, @phone, CURDATE(), 1, '13:00:00'"
                 : "@last, @first, @father, @phone";
 
             using var conn = ClinicDB.GetConnection();
