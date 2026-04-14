@@ -289,14 +289,7 @@ namespace Clinic.View.Doctor
         private void Complete_Click(object sender, RoutedEventArgs e)
         {
             _appointment.Notes = NotesBox.Text;
-
-            if (!NotesBox.IsEnabled)
-                _appointment.Status = AppointmentStatuses.NoShow;
-            else
-                _appointment.Status = AppointmentStatuses.Completed;
-
             SaveBloodType();
-
             DialogResult = true;
             Close();
         }
