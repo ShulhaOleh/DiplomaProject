@@ -1,40 +1,104 @@
-# Right click and press "Run with PowerShell" to create/update structure in structure.txt
-# If you want to double-click it every time, use .bat file
+# Generates the project structure tree, writes it to structure.txt,
+# and updates the "Project structure" section in readme.md and readme.uk.md.
+#
+# Usage:
+#   - Double-click generate_structure.bat, or
+#   - Right-click this file and "Run with PowerShell", or
+#   - Called automatically by the pre-commit git hook
 
-$outputFile = "structure.txt"
-$excludedDirs = @("bin", "obj", ".git", "venv", ".gitignore", "Clinic.sln")
-$excludedFiles = @("structure.txt")
+$scriptDir  = $PSScriptRoot
+$rootPath   = Split-Path -Parent $scriptDir
+$outputFile = Join-Path $scriptDir "structure.txt"
+$readmeEn   = Join-Path $rootPath "readme.md"
+$readmeUk   = Join-Path $rootPath "readme.uk.md"
 
-function Show-Tree {
-    param (
-        [string]$Path,
-        [string]$Prefix = ""
-    )
+$excluded = @("bin", "obj", ".git", ".githooks", ".vs", "venv")
 
-    $items = Get-ChildItem -LiteralPath $Path | Where-Object {
-        $excludedDirs -notcontains $_.Name -and $excludedFiles -notcontains $_.Name
-    }
+$treeLines = [System.Collections.Generic.List[string]]::new()
+
+function Add-Tree {
+    param([string]$Path, [string]$Prefix = "")
+
+    $items = Get-ChildItem -LiteralPath $Path |
+             Where-Object { $excluded -notcontains $_.Name }
 
     $count = $items.Count
     for ($i = 0; $i -lt $count; $i++) {
-        $item = $items[$i]
-        $isLast = ($i -eq $count - 1)
-        $connector = if ($isLast) { "└── " } else { "├── " }
+        $item   = $items[$i]
+        $isLast = $i -eq ($count - 1)
+        $conn   = if ($isLast) { "└── " } else { "├── " }
 
-        $line = "$Prefix$connector$item"
-        Add-Content -Path $outputFile -Value $line
+        $treeLines.Add("$Prefix$conn$($item.Name)")
 
         if ($item.PSIsContainer) {
-            $newPrefix = if ($isLast) { "$Prefix    " } else { "$Prefix│   " }
-            Show-Tree -Path $item.FullName -Prefix $newPrefix
+            $childPrefix = if ($isLast) { "$Prefix    " } else { "$Prefix│   " }
+            Add-Tree -Path $item.FullName -Prefix $childPrefix
         }
     }
 }
 
-$rootPath = Split-Path -Parent $PSScriptRoot
 $rootFolderName = Split-Path -Leaf $rootPath
+$treeLines.Add("$rootFolderName/")
+Add-Tree -Path $rootPath
 
-Set-Content -Path $outputFile -Value "$rootFolderName/"
-Show-Tree -Path $rootPath -Prefix ""
+# Write structure.txt
+Set-Content -Path $outputFile -Value $treeLines -Encoding UTF8
+Write-Host "structure.txt updated"
 
-Write-Host "Structure saved in $outputFile"
+# Update the Project structure block in a README file.
+# Replaces everything between the opening and closing ``` fences
+# that follow the section heading.
+function Update-ReadmeStructure {
+    param([string]$Path, [string[]]$TreeLines)
+
+    if (-not (Test-Path $Path)) {
+        Write-Warning "Not found: $Path"
+        return
+    }
+
+    $lines     = Get-Content -Path $Path -Encoding UTF8
+    $result    = [System.Collections.Generic.List[string]]::new()
+    $inSection = $false
+    $inFence   = $false
+
+    foreach ($line in $lines) {
+        # Detect the section heading (EN and UK)
+        if ($line -match '^## (Project structure|Структура проєкту)') {
+            $inSection = $true
+            $result.Add($line)
+            continue
+        }
+
+        # Opening fence — replace old content with fresh tree
+        if ($inSection -and -not $inFence -and $line -match '^```\s*$') {
+            $inFence = $true
+            $result.Add('```')
+            foreach ($treeLine in $TreeLines) {
+                $result.Add($treeLine)
+            }
+            continue
+        }
+
+        # Closing fence — stop skipping
+        if ($inFence -and $line -match '^```\s*$') {
+            $inFence   = $false
+            $inSection = $false
+            $result.Add('```')
+            continue
+        }
+
+        # Skip old tree lines while inside the fence
+        if ($inFence) { continue }
+
+        $result.Add($line)
+    }
+
+    Set-Content -Path $Path -Value $result -Encoding UTF8
+    Write-Host "Updated: $(Split-Path -Leaf $Path)"
+}
+
+$treeArray = $treeLines.ToArray()
+Update-ReadmeStructure -Path $readmeEn -TreeLines $treeArray
+Update-ReadmeStructure -Path $readmeUk -TreeLines $treeArray
+
+Write-Host "Done."

@@ -1,4 +1,4 @@
-Clinic/
+﻿Clinic/
 ├── Clinic
 │   ├── Assets
 │   │   ├── catalog.png
@@ -23,6 +23,7 @@ Clinic/
 │   ├── Models
 │   │   ├── Admin.cs
 │   │   ├── Appointment.cs
+│   │   ├── AppointmentStatuses.cs
 │   │   ├── Doctor.cs
 │   │   ├── Patient.cs
 │   │   ├── Receptionist.cs
@@ -92,8 +93,12 @@ Clinic/
 │   ├── fix_encoding.bat
 │   ├── fix_encoding.ps1
 │   ├── generate_structure.bat
-│   └── generate_structure.ps1
+│   ├── generate_structure.ps1
+│   └── structure.txt
+├── .env
 ├── .env.example
+├── .gitignore
+├── Clinic.sln
 ├── docker-compose.yml
 ├── LICENSE
 ├── readme.md

@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 ![Demo](Clinic/Assets/hospital.png)
 
@@ -48,7 +48,15 @@ git clone <repository-url>
 cd Clinic
 ```
 
-### 2. Налаштування файлу оточення
+### 2. Активація git хуків
+
+```
+git config core.hooksPath .githooks
+```
+
+> Це активує pre-commit хук, який автоматично оновлює структуру проєкту в обох README при кожному коміті.
+
+### 3. Налаштування файлу оточення
 
 Скопіюйте `.env.example` до `.env` у кореневій директорії та встановіть пароль бази даних:
 
@@ -65,7 +73,7 @@ MYSQL_PORT=3306
 
 > `.env` вказано у `.gitignore` і не буде потрапляти до репозиторію.
 
-### 3. Запуск бази даних
+### 4. Запуск бази даних
 
 ```
 docker-compose up -d
@@ -82,11 +90,11 @@ Docker автоматично:
 docker ps
 ```
 
-### 4. Відкриття рішення
+### 5. Відкриття рішення
 
 Відкрийте `Clinic.sln` у Visual Studio 2022. Пакети NuGet відновляться автоматично при першій збірці.
 
-### 5. Збірка та запуск
+### 6. Збірка та запуск
 
 Натисніть **F5** або скористайтесь **Debug → Start Debugging**.
 
@@ -106,25 +114,114 @@ docker ps
 
 ## Структура проєкту
 
+> Автоматично генерується скриптом `scripts/generate_structure.ps1` при кожному коміті.
+
 ```
 Clinic/
-├── Clinic/              # Основний WPF-застосунок (вихідний код C#)
-│   ├── DB/              # Помічники підключення до бази даних
-│   ├── Models/          # Моделі даних
-│   ├── View/            # XAML-представлення (Admin, Doctor, Receptionist)
-│   ├── ViewModels/      # MVVM View-моделі
-│   ├── Languages/       # Ресурси локалізації (EN, UK)
-│   └── Assets/          # Іконки та зображення
-├── DBs/                 # SQL-скрипти (виконуються Docker при першому запуску)
-│   ├── 00-Init.sql      # Створення баз даних
-│   ├── 01-Clinic.sql    # Схема Clinic
-│   ├── 02-ClinicAuth.sql# Схема ClinicAuth
-│   ├── 03-ClinicFill.sql# Тестові дані Clinic
-│   └── 04-ClinicAuthFill.sql # Тестові дані користувачів
-├── scripts/             # Допоміжні скрипти
-├── .env.example         # Шаблон змінних оточення
-├── docker-compose.yml   # Конфігурація контейнера MySQL
-└── Clinic.sln           # Файл рішення Visual Studio
+├── Clinic
+│   ├── Assets
+│   │   ├── catalog.png
+│   │   ├── hospital.ico
+│   │   └── hospital.png
+│   ├── Converters
+│   │   ├── DateOnlyConverter.cs
+│   │   ├── InverseBoolConverter.cs
+│   │   └── InverseBooleanToVisibilityConverter.cs
+│   ├── DB
+│   │   ├── AuthDB.cs
+│   │   ├── ClinicDB.cs
+│   │   ├── DBHelper.cs
+│   │   └── EnvLoader.cs
+│   ├── Langs
+│   │   └── PublishProfiles
+│   │       ├── FolderProfile.pubxml
+│   │       └── FolderProfile.pubxml.user
+│   ├── Languages
+│   │   ├── Resources.en.xaml
+│   │   └── Resources.uk.xaml
+│   ├── Models
+│   │   ├── Admin.cs
+│   │   ├── Appointment.cs
+│   │   ├── AppointmentStatuses.cs
+│   │   ├── Doctor.cs
+│   │   ├── Patient.cs
+│   │   ├── Receptionist.cs
+│   │   ├── ScheduleCell.cs
+│   │   ├── ScheduleRow.cs
+│   │   └── User.cs
+│   ├── Properties
+│   │   ├── Settings.Designer.cs
+│   │   └── Settings.settings
+│   ├── View
+│   │   ├── Admin
+│   │   │   ├── AdminUserManagementView.xaml
+│   │   │   ├── AdminUserManagementView.xaml.cs
+│   │   │   ├── ConfirmAdminPasswordDialog.xaml
+│   │   │   ├── ConfirmAdminPasswordDialog.xaml.cs
+│   │   │   ├── EditUserDialog.xaml
+│   │   │   └── EditUserDialog.xaml.cs
+│   │   ├── Doctor
+│   │   │   ├── CompleteAppointmentWindow.xaml
+│   │   │   ├── CompleteAppointmentWindow.xaml.cs
+│   │   │   ├── DoctorAppointmentsView.xaml
+│   │   │   └── DoctorAppointmentsView.xaml.cs
+│   │   ├── Receptionist
+│   │   │   ├── AppointmentManagementView.xaml
+│   │   │   └── AppointmentManagementView.xaml.cs
+│   │   ├── Login.xaml
+│   │   ├── Login.xaml.cs
+│   │   ├── MainWindow.xaml
+│   │   ├── MainWindow.xaml.cs
+│   │   ├── MakeAppointmentWindow.xaml
+│   │   ├── MakeAppointmentWindow.xaml.cs
+│   │   ├── ProfileView.xaml
+│   │   ├── ProfileView.xaml.cs
+│   │   ├── RegisterPatientWindow.xaml
+│   │   └── RegisterPatientWindow.xaml.cs
+│   ├── ViewModels
+│   │   ├── Admin
+│   │   │   └── AdminUserManagementViewModel.cs
+│   │   ├── Doctor
+│   │   │   └── DoctorAppointmentsViewModel.cs
+│   │   ├── Receptionist
+│   │   │   └── AppointmentManagementViewModel.cs
+│   │   ├── AppointmentService.cs
+│   │   ├── BaseViewModel.cs
+│   │   ├── LanguageManager.cs
+│   │   ├── LoginViewModel.cs
+│   │   ├── MainWindowViewModel.cs
+│   │   ├── MenuItem.cs
+│   │   ├── ProfileViewModel.cs
+│   │   ├── RegisterPatientViewModel.cs
+│   │   ├── RelayCommand.cs
+│   │   └── ViewResolver.cs
+│   ├── App.config
+│   ├── App.xaml
+│   ├── App.xaml.cs
+│   ├── App.xaml.Designer.cs
+│   ├── AssemblyInfo.cs
+│   ├── Clinic.csproj
+│   └── Clinic.csproj.user
+├── DBs
+│   ├── 00-Init.sql
+│   ├── 01-Clinic.sql
+│   ├── 02-ClinicAuth.sql
+│   ├── 03-ClinicFill.sql
+│   └── 04-ClinicAuthFill.sql
+├── scripts
+│   ├── fix_encoding.bat
+│   ├── fix_encoding.ps1
+│   ├── generate_structure.bat
+│   ├── generate_structure.ps1
+│   └── structure.txt
+├── .env
+├── .env.example
+├── .gitignore
+├── Clinic.sln
+├── docker-compose.yml
+├── LICENSE
+├── readme.md
+└── readme.uk.md
 ```
 
 ## Зупинка бази даних
