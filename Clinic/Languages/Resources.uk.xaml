@@ -50,6 +50,7 @@
 
     <!-- Buttons (common) -->
     <sys:String x:Key="Btn_Add">Додати</sys:String>
+    <sys:String x:Key="Btn_Edit">Редагувати</sys:String>
     <sys:String x:Key="Btn_Remove">Видалити</sys:String>
     <sys:String x:Key="Btn_Delete">Видалити</sys:String>
     <sys:String x:Key="Btn_Save">Зберегти</sys:String>

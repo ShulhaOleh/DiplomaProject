@@ -49,6 +49,7 @@
 
     <!-- Buttons (common) -->
     <sys:String x:Key="Btn_Add">Add</sys:String>
+    <sys:String x:Key="Btn_Edit">Edit</sys:String>
     <sys:String x:Key="Btn_Remove">Remove</sys:String>
     <sys:String x:Key="Btn_Delete">Delete</sys:String>
     <sys:String x:Key="Btn_Save">Save</sys:String>
